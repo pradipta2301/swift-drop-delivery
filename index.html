@@ -107,9 +107,6 @@
 </div>
 
 <script>
-    // ==========================================
-    // PASTE YOUR GOOGLE APPS SCRIPT URL HERE
-    // ==========================================
     const DATABASE_URL = "https://script.google.com/macros/s/AKfycbxm_C8OVt80XsMzGIV9_oyo2G8szvUw66BWZG3lGMW_IWL45JppaFOlIP0f3FAIH8qu3Q/exec";
 
     let challanBase64 = null;
@@ -135,6 +132,17 @@
 
     function initializeProfile() {
         updateOnlineStatus();
+        
+        // Auto-expire session if it's a new calendar day
+        const lastLoginDate = localStorage.getItem("swiftdrop_login_date");
+        const todayStr = new Date().toISOString().slice(0, 10);
+        if (lastLoginDate && lastLoginDate !== todayStr) {
+            localStorage.clear();
+            alert("New day detected. Session expired. Please log in again.");
+            location.reload();
+            return;
+        }
+
         const agentData = localStorage.getItem("swiftdrop_agent_name");
         if (agentData) {
             document.getElementById("setupSection").style.display = "none";
@@ -166,6 +174,7 @@
             const data = await response.json();
             if (data.status === "success") {
                 localStorage.setItem("swiftdrop_agent_name", data.driver_name);
+                localStorage.setItem("swiftdrop_login_date", new Date().toISOString().slice(0, 10));
                 initializeProfile();
             } else {
                 alert("❌ " + data.detail);
@@ -189,7 +198,7 @@
                     });
                 } catch (e) {}
             }
-            localStorage.removeItem("swiftdrop_agent_name");
+            localStorage.clear();
             location.reload();
         }
     }
@@ -296,13 +305,12 @@
         document.getElementById("dynamicItemContainer").innerHTML = '<div class="empty-items-text">Select delivery location.</div>';
     }
 
-    // --- GPS HARDWARE ENFORCEMENT & TIMEOUT ---
     function requestLocation() {
         const gpsBtn = document.getElementById("gpsBtn");
         gpsBtn.innerText = "📍 Acquiring GPS...";
         
         if (!navigator.geolocation) {
-            alert("Geolocation is not supported by your mobile browser.");
+            alert("Geolocation not supported.");
             gpsBtn.innerText = "📍 Verify Delivery Location";
             return;
         }
@@ -317,13 +325,12 @@
             },
             function(error) {
                 gpsBtn.innerText = "📍 Verify Delivery Location";
-                alert("❌ GPS Failed / Disabled!\n\nPlease make sure Location Services (GPS) are turned ON in your phone settings, then try again.");
+                alert("❌ GPS Failed / Disabled!\n\nPlease turn on Location Services (GPS) in your phone settings.");
             },
             { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
         );
     }
 
-    // --- Camera Handling ---
     document.getElementById("challanInput").addEventListener("change", function(e) {
         processImage(e.target.files[0], "challanPreview", "btnChallan", function(b64) { challanBase64 = b64; });
     });
@@ -350,7 +357,6 @@
         btn.disabled = !(task && challanBase64 && locationBase64 && gpsLat);
     }
 
-    // --- SUBMISSION & OFFLINE QUEUE SYNC ---
     async function submitData() {
         const btn = document.getElementById("submitBtn");
         const msg = document.getElementById("statusMsg");
@@ -370,7 +376,7 @@
             const maxQty = currentTaskOriginalItems[index] ? currentTaskOriginalItems[index].max : deliveredQty;
             
             if (deliveredQty < maxQty) {
-                isFullyCompleted = false; // Trigger partial delivery state
+                isFullyCompleted = false;
             }
             itemDeliveries.push(`${itemName}: ${deliveredQty}`);
         });
@@ -392,7 +398,6 @@
         };
 
         if (!navigator.onLine) {
-            // Save to offline local storage queue
             let queue = JSON.parse(localStorage.getItem("swiftdrop_offline_queue") || "[]");
             queue.push(payload);
             localStorage.setItem("swiftdrop_offline_queue", JSON.stringify(queue));
@@ -445,7 +450,7 @@
                 });
                 const data = await response.json();
                 if (data.status === "success") {
-                    queue.shift(); // Remove successfully synced item
+                    queue.shift();
                     localStorage.setItem("swiftdrop_offline_queue", JSON.stringify(queue));
                 } else {
                     break;
