@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Swift Drop</title>
+<style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
+    body { background-color: #f4f6f9; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+    .card { background: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.10); padding: 15px; width: 100%; max-width: 450px; }
+    
+    h1 { font-size: 24px; color: #0d6efd; text-align: center; margin-bottom: 15px; font-style: italic; font-weight: 800;}
+    
+    /* Login & Agent Section */
+    .agent-box { display: flex; justify-content: space-between; align-items: center; border: 2px solid #333; padding: 12px; font-weight: bold; font-size: 16px; border-radius: 6px; margin-bottom: 20px; background: #f8f9fa; }
+    .btn-logout { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    
+    /* Tabs */
+    .tabs { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 15px; }
+    .tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.3s;}
+    .tab.active { color: #0d6efd; border-bottom: 3px solid #0d6efd; }
+
+    /* Forms & Selectors */
+    label { font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px; }
+    select.task-select, input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; margin-bottom: 15px; background: #fff; font-weight: bold;}
+
+    /* The Six Items */
+    .item-section { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 10px; margin-bottom: 15px; }
+    .item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #dee2e6; }
+    .item-row:last-child { border-bottom: none; }
+    .item-row span { font-size: 14px; font-weight: bold; color: #444; }
+    .item-row select { padding: 6px 12px; font-size: 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; width: 70px;}
+
+    /* Camera Grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;}
+    .btn-camera { padding: 12px 5px; font-size: 13px; font-weight: bold; border: 1px solid #0d6efd; background: #e7f1ff; color: #0d6efd; border-radius: 6px; cursor: pointer; text-align: center; width: 100%; }
+    .preview-box { height: 110px; border: 2px dashed #ccc; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: #fafafa; overflow: hidden; }
+    .preview-box img { width: 100%; height: 100%; object-fit: contain; display: none; }
+    
+    /* Action Buttons */
+    .btn-action { width: 100%; padding: 14px; font-size: 16px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 10px; color: #fff; }
+    .btn-primary { background-color: #0d6efd; }
+    .btn-gps { background-color: #6c757d; }
+    .btn-gps.verified { background-color: #198754; }
+    .btn-submit { background-color: #198754; }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    #setupSection { display: flex; flex-direction: column; gap: 10px; }
+</style>
+</head>
+<body onload="initializeProfile()">
+
+<div class="card">
+    <h1>Swift Drop</h1>
+
+    <!-- 1. INITIAL LOGIN / AUTHENTICATION -->
+    <div id="setupSection">
+        <label style="text-align:center; font-size: 15px; color: #333;">Biometric / Credential Login</label>
+        <input type="text" id="driverIdInput" placeholder="Enter Agent ID (e.g., DRV-01)">
+        <button class="btn-action btn-primary" onclick="simulateLogin()">🔓 Secure Login</button>
+        <p style="text-align:center; font-size: 12px; color: #666;">*Fingerprint plugin will attach here when compiled as APK.</p>
+    </div>
+
+    <!-- 2. MAIN APP INTERFACE -->
+    <div id="mainApp" style="display:none;">
+        
+        <div class="agent-box">
+            <span>👤 <span id="displayAgentName">Agent Name</span></span>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+
+        <!-- Task Routing & Filters -->
+        <div class="tabs">
+            <div class="tab active" id="tabToday" onclick="switchTab('today')">Today Task</div>
+            <div class="tab" id="tabPending" onclick="switchTab('pending')">Pending Task</div>
+        </div>
+
+        <label>Filter by Block</label>
+        <select id="blockDropdown" class="task-select" onchange="filterSchools()">
+            <option value="">-- Select Block --</option>
+            <option value="Rayagada">Rayagada</option>
+            <option value="Mohana">Mohana</option>
+            <option value="Nuagada">Nuagada</option>
+        </select>
+
+        <label>Select Delivery Location</label>
+        <select id="taskDropdown" class="task-select" onchange="checkReadiness()">
+            <option value="">-- Waiting for Block Selection --</option>
+        </select>
+
+        <!-- The "Six" Items -->
+        <label>Confirm Delivered Quantities</label>
+        <div class="item-section">
+            <div class="item-row">
+                <span>1 - Inverter</span>
+                <select class="qty-select" id="qtyInverter"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+            </div>
+            <div class="item-row">
+                <span>2 - Battery</span>
+                <select class="qty-select" id="qtyBattery"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select>
+            </div>
+            <div class="item-row">
+                <span>3 - Ceiling Fan</span>
+                <select class="qty-select" id="qtyFan"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>10</option><option>15</option></select>
+            </div>
+            <div class="item-row">
+                <span>4 - Tube Light</span>
+                <select class="qty-select" id="qtyLight"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>10</option><option>20</option></select>
+            </div>
+            <div class="item-row">
+                <span>5 - Trolley</span>
+                <select class="qty-select" id="qtyTrolley"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+            </div>
+            <div class="item-row">
+                <span>6 - Extension</span>
+                <select class="qty-select" id="qtyExtension"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+            </div>
+        </div>
+
+        <!-- Cameras Side-by-Side -->
+        <label>Photographic Proof</label>
+        <div class="grid-2">
+            <div>
+                <button class="btn-camera" onclick="document.getElementById('challanInput').click()" id="btnChallan">📄 Capture Challan</button>
+                <input type="file" id="challanInput" accept="image/*" capture="environment" style="display:none;">
+                <div class="preview-box" style="margin-top: 8px;"><img id="challanPreview"></div>
+            </div>
+            <div>
+                <button class="btn-camera" onclick="document.getElementById('locationInput').click()" id="btnLocation">🏫 Capture Location</button>
+                <input type="file" id="locationInput" accept="image/*" capture="environment" style="display:none;">
+                <div class="preview-box" style="margin-top: 8px;"><img id="locationPreview"></div>
+            </div>
+        </div>
+
+        <!-- GPS & Submit -->
+        <button class="btn-action btn-gps" id="gpsBtn" onclick="requestLocation()">📍 Verify Delivery Location</button>
+        <button class="btn-action btn-submit" id="submitBtn" onclick="submitData()" disabled>🚀 Submit Delivery</button>
+        
+        <div id="statusMsg" style="text-align: center; margin-top: 10px; font-weight: bold; color: #198754; display: none;"></div>
+    </div>
+</div>
+
+<script>
+    let challanBase64 = null;
+    let locationBase64 = null;
+    let gpsLat = null;
+    let gpsLon = null;
+
+    // --- Authentication Logic ---
+    function initializeProfile() {
+        const agentData = localStorage.getItem("swiftdrop_agent_name");
+        if (agentData) {
+            document.getElementById("setupSection").style.display = "none";
+            document.getElementById("mainApp").style.display = "block";
+            document.getElementById("displayAgentName").innerText = agentData;
+        }
+    }
+
+    function simulateLogin() {
+        const id = document.getElementById("driverIdInput").value.trim().toUpperCase();
+        if(id.length > 3) {
+            // In the future, Python will map DRV-01 to "Siby Priyadarshi"
+            // For now, we simulate a successful login
+            localStorage.setItem("swiftdrop_agent_name", id);
+            localStorage.setItem("swiftdrop_login_time", new Date().toISOString());
+            initializeProfile();
+        } else {
+            alert("Please enter a valid Agent ID.");
+        }
+    }
+
+    function logout() {
+        if(confirm("Are you sure you want to log out?")) {
+            localStorage.removeItem("swiftdrop_agent_name");
+            localStorage.removeItem("swiftdrop_login_time");
+            location.reload();
+        }
+    }
+
+    // --- UI Interactions ---
+    function switchTab(tab) {
+        document.getElementById("tabToday").classList.remove("active");
+        document.getElementById("tabPending").classList.remove("active");
+        document.getElementById("blockDropdown").value = "";
+        document.getElementById("taskDropdown").innerHTML = '<option value="">-- Waiting for Block Selection --</option>';
+        
+        if(tab === 'today') { document.getElementById("tabToday").classList.add("active"); } 
+        else { document.getElementById("tabPending").classList.add("active"); }
+        checkReadiness();
+    }
+
+    function filterSchools() {
+        const block = document.getElementById("blockDropdown").value;
+        const taskDropdown = document.getElementById("taskDropdown");
+        taskDropdown.innerHTML = '<option value="">-- Select Delivery Location --</option>';
+        
+        if(block === "Rayagada") {
+            taskDropdown.innerHTML += '<option value="T1">Ashram School Jallo</option>';
+        } else if (block === "Mohana") {
+            taskDropdown.innerHTML += '<option value="T2">Lingipur SS</option>';
+        } else if (block === "Nuagada") {
+            taskDropdown.innerHTML += '<option value="T3">Govt High School</option>';
+        }
+        checkReadiness();
+    }
+
+    // --- Camera Logic ---
+    document.getElementById("challanInput").addEventListener("change", function(e) {
+        processImage(e.target.files[0], "challanPreview", "btnChallan", function(b64) { challanBase64 = b64; });
+    });
+    
+    document.getElementById("locationInput").addEventListener("change", function(e) {
+        processImage(e.target.files[0], "locationPreview", "btnLocation", function(b64) { locationBase64 = b64; });
+    });
+
+    function processImage(file, previewId, btnId, callback) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById(previewId).src = e.target.result;
+            document.getElementById(previewId).style.display = "block";
+            document.getElementById(btnId).innerText = "🔄 Retake";
+            document.getElementById(btnId).style.background = "#e9ecef";
+            document.getElementById(btnId).style.color = "#333";
+            callback(e.target.result);
+            checkReadiness();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // --- GPS Logic ---
+    function requestLocation() {
+        const gpsBtn = document.getElementById("gpsBtn");
+        gpsBtn.innerText = "📍 Requesting...";
+        navigator.geolocation.getCurrentPosition(
+            function(pos) {
+                gpsLat = pos.coords.latitude;
+                gpsLon = pos.coords.longitude;
+                gpsBtn.classList.add("verified");
+                gpsBtn.innerText = "✅ Location Verified";
+                checkReadiness();
+            },
+            function() { 
+                alert("GPS Denied or Error. Please enable Location Services."); 
+                gpsBtn.innerText = "📍 Verify Delivery Location"; 
+            },
+            { enableHighAccuracy: true }
+        );
+    }
+
+    // --- Validation & Submit ---
+    function checkReadiness() {
+        const task = document.getElementById("taskDropdown").value;
+        const btn = document.getElementById("submitBtn");
+        btn.disabled = !(task && challanBase64 && locationBase64 && gpsLat);
+    }
+
+    function submitData() {
+        const btn = document.getElementById("submitBtn");
+        const msg = document.getElementById("statusMsg");
+        btn.disabled = true;
+        msg.style.display = "block";
+        msg.innerText = "⏳ Uploading securely to database...";
+        
+        setTimeout(() => {
+            msg.innerText = "✅ Success! Delivery Logged.";
+            setTimeout(() => { location.reload(); }, 1500);
+        }, 1500);
+    }
+</script>
+</body>
+</html>
