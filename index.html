@@ -11,7 +11,7 @@
     
     h1 { font-size: 24px; color: #0d6efd; text-align: center; margin-bottom: 15px; font-style: italic; font-weight: 800;}
     
-    /* Login & Agent Section */
+    /* Login & Agent Header */
     .agent-box { display: flex; justify-content: space-between; align-items: center; border: 2px solid #333; padding: 12px; font-weight: bold; font-size: 16px; border-radius: 6px; margin-bottom: 20px; background: #f8f9fa; }
     .btn-logout { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; }
     
@@ -20,18 +20,19 @@
     .tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.3s;}
     .tab.active { color: #0d6efd; border-bottom: 3px solid #0d6efd; }
 
-    /* Forms & Selectors */
+    /* Form Elements */
     label { font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px; }
     select.task-select, input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; margin-bottom: 15px; background: #fff; font-weight: bold;}
 
-    /* The Six Items */
-    .item-section { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 10px; margin-bottom: 15px; }
+    /* Dynamic Item Section */
+    .item-section { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 12px; margin-bottom: 15px; min-height: 50px; }
     .item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #dee2e6; }
     .item-row:last-child { border-bottom: none; }
-    .item-row span { font-size: 14px; font-weight: bold; color: #444; }
-    .item-row select { padding: 6px 12px; font-size: 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; width: 70px;}
+    .item-row span { font-size: 14px; font-weight: bold; color: #333; }
+    .item-row select { padding: 6px 12px; font-size: 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; width: 80px; font-weight: bold;}
+    .empty-items-text { color: #888; font-size: 13px; text-align: center; margin: 10px 0; }
 
-    /* Camera Grid */
+    /* Camera Section */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;}
     .btn-camera { padding: 12px 5px; font-size: 13px; font-weight: bold; border: 1px solid #0d6efd; background: #e7f1ff; color: #0d6efd; border-radius: 6px; cursor: pointer; text-align: center; width: 100%; }
     .preview-box { height: 110px; border: 2px dashed #ccc; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: #fafafa; overflow: hidden; }
@@ -57,8 +58,8 @@
     <div id="setupSection">
         <label style="text-align:center; font-size: 15px; color: #333;">Biometric / Credential Login</label>
         <input type="text" id="driverIdInput" placeholder="Enter Agent ID (e.g., DRV-01)">
-        <button class="btn-action btn-primary" onclick="simulateLogin()">🔓 Secure Login</button>
-        <p style="text-align:center; font-size: 12px; color: #666;">*Fingerprint plugin will attach here when compiled as APK.</p>
+        <button class="btn-action btn-primary" id="loginBtn" onclick="simulateLogin()">🔓 Secure Login</button>
+        <p style="text-align:center; font-size: 12px; color: #666;">*Fingerprint verified automatically in APK</p>
     </div>
 
     <!-- 2. MAIN APP INTERFACE -->
@@ -66,7 +67,7 @@
         
         <div class="agent-box">
             <span>👤 <span id="displayAgentName">Agent Name</span></span>
-            <button class="btn-logout" onclick="logout()">Logout</button>
+            <button class="btn-logout" id="logoutBtn" onclick="logout()">Logout</button>
         </div>
 
         <!-- Task Routing & Filters -->
@@ -77,47 +78,21 @@
 
         <label>Filter by Block</label>
         <select id="blockDropdown" class="task-select" onchange="filterSchools()">
-            <option value="">-- Select Block --</option>
-            <option value="Rayagada">Rayagada</option>
-            <option value="Mohana">Mohana</option>
-            <option value="Nuagada">Nuagada</option>
+            <option value="">-- Fetching Blocks... --</option>
         </select>
 
         <label>Select Delivery Location</label>
-        <select id="taskDropdown" class="task-select" onchange="checkReadiness()">
+        <select id="taskDropdown" class="task-select" onchange="onTaskSelected()">
             <option value="">-- Waiting for Block Selection --</option>
         </select>
 
-        <!-- The "Six" Items -->
+        <!-- DYNAMIC ITEMS SECTION -->
         <label>Confirm Delivered Quantities</label>
-        <div class="item-section">
-            <div class="item-row">
-                <span>1 - Inverter</span>
-                <select class="qty-select" id="qtyInverter"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-            </div>
-            <div class="item-row">
-                <span>2 - Battery</span>
-                <select class="qty-select" id="qtyBattery"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select>
-            </div>
-            <div class="item-row">
-                <span>3 - Ceiling Fan</span>
-                <select class="qty-select" id="qtyFan"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>10</option><option>15</option></select>
-            </div>
-            <div class="item-row">
-                <span>4 - Tube Light</span>
-                <select class="qty-select" id="qtyLight"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>10</option><option>20</option></select>
-            </div>
-            <div class="item-row">
-                <span>5 - Trolley</span>
-                <select class="qty-select" id="qtyTrolley"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-            </div>
-            <div class="item-row">
-                <span>6 - Extension</span>
-                <select class="qty-select" id="qtyExtension"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-            </div>
+        <div class="item-section" id="dynamicItemContainer">
+            <div class="empty-items-text">Select a delivery location above to view assigned items.</div>
         </div>
 
-        <!-- Cameras Side-by-Side -->
+        <!-- Photographic Proof -->
         <label>Photographic Proof</label>
         <div class="grid-2">
             <div>
@@ -141,51 +116,118 @@
 </div>
 
 <script>
+    // ==========================================
+    // PASTE YOUR GOOGLE APPS SCRIPT URL HERE
+    // ==========================================
+    const DATABASE_URL = "https://script.google.com/macros/s/AKfycbx_oLe8XFND7vYwEGd5ijY-3kMmVEpBoKC2SfQsqeY8/dev";
+
     let challanBase64 = null;
     let locationBase64 = null;
     let gpsLat = null;
     let gpsLon = null;
+    let serverTasks = []; 
+    let activeTab = 'today';
 
-    // --- Authentication Logic ---
     function initializeProfile() {
         const agentData = localStorage.getItem("swiftdrop_agent_name");
         if (agentData) {
             document.getElementById("setupSection").style.display = "none";
             document.getElementById("mainApp").style.display = "block";
             document.getElementById("displayAgentName").innerText = agentData;
+            fetchTasks(agentData);
         }
     }
 
-    function simulateLogin() {
+    async function simulateLogin() {
         const id = document.getElementById("driverIdInput").value.trim().toUpperCase();
-        if(id.length > 3) {
-            // In the future, Python will map DRV-01 to "Siby Priyadarshi"
-            // For now, we simulate a successful login
-            localStorage.setItem("swiftdrop_agent_name", id);
-            localStorage.setItem("swiftdrop_login_time", new Date().toISOString());
-            initializeProfile();
-        } else {
+        const btn = document.getElementById("loginBtn");
+        btn.innerText = "⏳ Verifying with Database...";
+        
+        if (id.length < 3) {
             alert("Please enter a valid Agent ID.");
+            btn.innerText = "🔓 Secure Login";
+            return;
+        }
+
+        try {
+            const response = await fetch(DATABASE_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify({ action: "login", driver_id: id })
+            });
+            const data = await response.json();
+            
+            if (data.status === "success") {
+                localStorage.setItem("swiftdrop_agent_name", data.driver_name);
+                initializeProfile();
+            } else {
+                alert("❌ " + data.detail);
+                btn.innerText = "🔓 Secure Login";
+            }
+        } catch (e) {
+            alert("Network error. Ensure internet connection is active.");
+            btn.innerText = "🔓 Secure Login";
         }
     }
 
-    function logout() {
-        if(confirm("Are you sure you want to log out?")) {
+    async function logout() {
+        if (confirm("Are you sure you want to log out?")) {
+            const agentName = localStorage.getItem("swiftdrop_agent_name");
+            const btn = document.getElementById("logoutBtn");
+            btn.innerText = "Logging out...";
+
+            try {
+                await fetch(DATABASE_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify({ action: "logout", driver_name: agentName })
+                });
+            } catch (e) {}
+
             localStorage.removeItem("swiftdrop_agent_name");
-            localStorage.removeItem("swiftdrop_login_time");
             location.reload();
         }
     }
 
-    // --- UI Interactions ---
-    function switchTab(tab) {
-        document.getElementById("tabToday").classList.remove("active");
-        document.getElementById("tabPending").classList.remove("active");
-        document.getElementById("blockDropdown").value = "";
-        document.getElementById("taskDropdown").innerHTML = '<option value="">-- Waiting for Block Selection --</option>';
+    async function fetchTasks(driverName) {
+        const blockDropdown = document.getElementById("blockDropdown");
+        blockDropdown.innerHTML = '<option value="">⏳ Loading Tasks...</option>';
         
-        if(tab === 'today') { document.getElementById("tabToday").classList.add("active"); } 
-        else { document.getElementById("tabPending").classList.add("active"); }
+        try {
+            const response = await fetch(DATABASE_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify({ action: "getTasks", driver_name: driverName })
+            });
+            const data = await response.json();
+            
+            if (data.status === "success") {
+                serverTasks = data.tasks; 
+                populateBlockDropdown();
+            }
+        } catch (e) {
+            blockDropdown.innerHTML = '<option value="">❌ Connection Error</option>';
+        }
+    }
+
+    function populateBlockDropdown() {
+        const blockDropdown = document.getElementById("blockDropdown");
+        const availableTasks = serverTasks.filter(t => activeTab === 'today' ? t.is_today : !t.is_today);
+        const uniqueBlocks = [...new Set(availableTasks.map(t => t.block))];
+
+        blockDropdown.innerHTML = '<option value="">-- Select Block --</option>';
+        uniqueBlocks.forEach(block => {
+            if (block) blockDropdown.innerHTML += `<option value="${block}">${block}</option>`;
+        });
+        filterSchools();
+    }
+
+    function switchTab(tab) {
+        activeTab = tab;
+        document.getElementById("tabToday").classList.toggle("active", tab === 'today');
+        document.getElementById("tabPending").classList.toggle("active", tab === 'pending');
+        populateBlockDropdown();
+        clearDynamicItems();
         checkReadiness();
     }
 
@@ -194,17 +236,99 @@
         const taskDropdown = document.getElementById("taskDropdown");
         taskDropdown.innerHTML = '<option value="">-- Select Delivery Location --</option>';
         
-        if(block === "Rayagada") {
-            taskDropdown.innerHTML += '<option value="T1">Ashram School Jallo</option>';
-        } else if (block === "Mohana") {
-            taskDropdown.innerHTML += '<option value="T2">Lingipur SS</option>';
-        } else if (block === "Nuagada") {
-            taskDropdown.innerHTML += '<option value="T3">Govt High School</option>';
-        }
+        const filteredTasks = serverTasks.filter(t => {
+            const tabCondition = (activeTab === 'today') ? t.is_today : !t.is_today;
+            return tabCondition && t.block === block;
+        });
+
+        filteredTasks.forEach(task => {
+            taskDropdown.innerHTML += `<option value="${task.task_id}">${task.location}</option>`;
+        });
+        
+        clearDynamicItems();
         checkReadiness();
     }
 
-    // --- Camera Logic ---
+    // --- DYNAMIC ITEM PARSER & GENERATOR ---
+    function parseItemsString(itemsStr) {
+        if (!itemsStr) return [];
+        const parts = itemsStr.toString().split(/[,;\n]+/);
+        const result = [];
+
+        parts.forEach(part => {
+            const trimmed = part.trim();
+            if (!trimmed) return;
+            
+            // Format 1: "Inverter: 2" or "Inverter - 2" or "Inverter = 2"
+            let match = trimmed.match(/^(.+?)[:=-]\s*(\d+)$/);
+            if (match) {
+                result.push({ name: match[1].trim(), max: parseInt(match[2], 10) });
+                return;
+            }
+            // Format 2: "2 Inverter" or "2 Inverters"
+            match = trimmed.match(/^(\d+)\s+(.+)$/);
+            if (match) {
+                result.push({ name: match[2].trim(), max: parseInt(match[1], 10) });
+                return;
+            }
+            // Fallback: Just item name
+            result.push({ name: trimmed, max: 10 });
+        });
+        return result;
+    }
+
+    function onTaskSelected() {
+        const taskId = document.getElementById("taskDropdown").value;
+        const container = document.getElementById("dynamicItemContainer");
+        container.innerHTML = "";
+
+        if (!taskId) {
+            clearDynamicItems();
+            checkReadiness();
+            return;
+        }
+
+        const selectedTask = serverTasks.find(t => String(t.task_id) === String(taskId));
+        if (!selectedTask || !selectedTask.items) {
+            container.innerHTML = '<div class="empty-items-text">No specific items listed in dispatch sheet.</div>';
+            checkReadiness();
+            return;
+        }
+
+        const parsedItems = parseItemsString(selectedTask.items);
+        if (parsedItems.length === 0) {
+            container.innerHTML = '<div class="empty-items-text">No items found for this task.</div>';
+            checkReadiness();
+            return;
+        }
+
+        // Build dynamic HTML dropdowns for each parsed item
+        parsedItems.forEach(item => {
+            const row = document.createElement("div");
+            row.className = "item-row";
+
+            let optionsHtml = "";
+            for (let q = 0; q <= item.max; q++) {
+                // Default pre-select to maximum required quantity
+                const isSelected = (q === item.max) ? "selected" : "";
+                optionsHtml += `<option value="${q}" ${isSelected}>${q}</option>`;
+            }
+
+            row.innerHTML = `
+                <span>${item.name} (Max: ${item.max})</span>
+                <select class="qty-select dynamic-qty" data-item-name="${item.name}">${optionsHtml}</select>
+            `;
+            container.appendChild(row);
+        });
+
+        checkReadiness();
+    }
+
+    function clearDynamicItems() {
+        document.getElementById("dynamicItemContainer").innerHTML = '<div class="empty-items-text">Select a delivery location above to view assigned items.</div>';
+    }
+
+    // --- Camera Handling ---
     document.getElementById("challanInput").addEventListener("change", function(e) {
         processImage(e.target.files[0], "challanPreview", "btnChallan", function(b64) { challanBase64 = b64; });
     });
@@ -228,7 +352,7 @@
         reader.readAsDataURL(file);
     }
 
-    // --- GPS Logic ---
+    // --- GPS Handling ---
     function requestLocation() {
         const gpsBtn = document.getElementById("gpsBtn");
         gpsBtn.innerText = "📍 Requesting...";
@@ -248,24 +372,65 @@
         );
     }
 
-    // --- Validation & Submit ---
     function checkReadiness() {
         const task = document.getElementById("taskDropdown").value;
         const btn = document.getElementById("submitBtn");
         btn.disabled = !(task && challanBase64 && locationBase64 && gpsLat);
     }
 
-    function submitData() {
+    async function submitData() {
         const btn = document.getElementById("submitBtn");
         const msg = document.getElementById("statusMsg");
+        const agentName = localStorage.getItem("swiftdrop_agent_name");
+        
         btn.disabled = true;
         msg.style.display = "block";
         msg.innerText = "⏳ Uploading securely to database...";
         
-        setTimeout(() => {
-            msg.innerText = "✅ Success! Delivery Logged.";
-            setTimeout(() => { location.reload(); }, 1500);
-        }, 1500);
+        // Collect dynamically generated item quantities
+        const dynamicSelects = document.querySelectorAll(".dynamic-qty");
+        let itemDeliveries = [];
+        dynamicSelects.forEach(select => {
+            const itemName = select.getAttribute("data-item-name");
+            itemDeliveries.push(`${itemName}: ${select.value}`);
+        });
+
+        const taskSelect = document.getElementById("taskDropdown");
+        const locationName = taskSelect.options[taskSelect.selectedIndex].text;
+
+        const payload = {
+            action: "submit",
+            task_id: taskSelect.value,
+            driver_name: agentName,
+            delivery_location: locationName,
+            gps_lat: gpsLat,
+            gps_lon: gpsLon,
+            challan_b64: challanBase64,
+            location_b64: locationBase64,
+            items_delivered: itemDeliveries.join(", ")
+        };
+
+        try {
+            const response = await fetch(DATABASE_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            
+            if (data.status === "success") {
+                msg.innerText = "✅ Success! Delivery Logged.";
+                setTimeout(() => { location.reload(); }, 1500);
+            } else {
+                msg.style.color = "#dc3545";
+                msg.innerText = "❌ Upload Failed: " + data.detail;
+                btn.disabled = false;
+            }
+        } catch (e) {
+            msg.style.color = "#dc3545";
+            msg.innerText = "❌ Network Error. Try again.";
+            btn.disabled = false;
+        }
     }
 </script>
 </body>
