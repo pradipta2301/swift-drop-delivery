@@ -11,20 +11,16 @@
     
     h1 { font-size: 24px; color: #0d6efd; text-align: center; margin-bottom: 15px; font-style: italic; font-weight: 800;}
     
-    /* Login & Agent Header */
     .agent-box { display: flex; justify-content: space-between; align-items: center; border: 2px solid #333; padding: 12px; font-weight: bold; font-size: 16px; border-radius: 6px; margin-bottom: 20px; background: #f8f9fa; }
     .btn-logout { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; }
     
-    /* Tabs */
     .tabs { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 15px; }
     .tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.3s;}
     .tab.active { color: #0d6efd; border-bottom: 3px solid #0d6efd; }
 
-    /* Form Elements */
     label { font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px; }
     select.task-select, input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; margin-bottom: 15px; background: #fff; font-weight: bold;}
 
-    /* Dynamic Item Section */
     .item-section { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 12px; margin-bottom: 15px; min-height: 50px; }
     .item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #dee2e6; }
     .item-row:last-child { border-bottom: none; }
@@ -32,13 +28,11 @@
     .item-row select { padding: 6px 12px; font-size: 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; width: 80px; font-weight: bold;}
     .empty-items-text { color: #888; font-size: 13px; text-align: center; margin: 10px 0; }
 
-    /* Camera Section */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;}
     .btn-camera { padding: 12px 5px; font-size: 13px; font-weight: bold; border: 1px solid #0d6efd; background: #e7f1ff; color: #0d6efd; border-radius: 6px; cursor: pointer; text-align: center; width: 100%; }
     .preview-box { height: 110px; border: 2px dashed #ccc; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: #fafafa; overflow: hidden; }
     .preview-box img { width: 100%; height: 100%; object-fit: contain; display: none; }
     
-    /* Action Buttons */
     .btn-action { width: 100%; padding: 14px; font-size: 16px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 10px; color: #fff; }
     .btn-primary { background-color: #0d6efd; }
     .btn-gps { background-color: #6c757d; }
@@ -46,6 +40,7 @@
     .btn-submit { background-color: #198754; }
     .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
     
+    #offlineBanner { background: #ffc107; color: #000; text-align: center; padding: 8px; font-weight: bold; font-size: 13px; display: none; border-radius: 4px; margin-bottom: 10px;}
     #setupSection { display: flex; flex-direction: column; gap: 10px; }
 </style>
 </head>
@@ -53,16 +48,16 @@
 
 <div class="card">
     <h1>Swift Drop</h1>
+    <div id="offlineBanner">📡 Offline Mode: Submissions will auto-sync when connection returns.</div>
 
-    <!-- 1. INITIAL LOGIN / AUTHENTICATION -->
+    <!-- 1. INITIAL LOGIN -->
     <div id="setupSection">
         <label style="text-align:center; font-size: 15px; color: #333;">Biometric / Credential Login</label>
         <input type="text" id="driverIdInput" placeholder="Enter Agent ID (e.g., DRV-01)">
         <button class="btn-action btn-primary" id="loginBtn" onclick="simulateLogin()">🔓 Secure Login</button>
-        <p style="text-align:center; font-size: 12px; color: #666;">*Fingerprint verified automatically in APK</p>
     </div>
 
-    <!-- 2. MAIN APP INTERFACE -->
+    <!-- 2. MAIN APP -->
     <div id="mainApp" style="display:none;">
         
         <div class="agent-box">
@@ -70,7 +65,6 @@
             <button class="btn-logout" id="logoutBtn" onclick="logout()">Logout</button>
         </div>
 
-        <!-- Task Routing & Filters -->
         <div class="tabs">
             <div class="tab active" id="tabToday" onclick="switchTab('today')">Today Task</div>
             <div class="tab" id="tabPending" onclick="switchTab('pending')">Pending Task</div>
@@ -86,13 +80,11 @@
             <option value="">-- Waiting for Block Selection --</option>
         </select>
 
-        <!-- DYNAMIC ITEMS SECTION -->
         <label>Confirm Delivered Quantities</label>
         <div class="item-section" id="dynamicItemContainer">
-            <div class="empty-items-text">Select a delivery location above to view assigned items.</div>
+            <div class="empty-items-text">Select a delivery location above.</div>
         </div>
 
-        <!-- Photographic Proof -->
         <label>Photographic Proof</label>
         <div class="grid-2">
             <div>
@@ -107,7 +99,6 @@
             </div>
         </div>
 
-        <!-- GPS & Submit -->
         <button class="btn-action btn-gps" id="gpsBtn" onclick="requestLocation()">📍 Verify Delivery Location</button>
         <button class="btn-action btn-submit" id="submitBtn" onclick="submitData()" disabled>🚀 Submit Delivery</button>
         
@@ -127,8 +118,23 @@
     let gpsLon = null;
     let serverTasks = []; 
     let activeTab = 'today';
+    let currentTaskOriginalItems = [];
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    function updateOnlineStatus() {
+        const banner = document.getElementById("offlineBanner");
+        if (!navigator.onLine) {
+            banner.style.display = "block";
+        } else {
+            banner.style.display = "none";
+            syncOfflineQueue();
+        }
+    }
 
     function initializeProfile() {
+        updateOnlineStatus();
         const agentData = localStorage.getItem("swiftdrop_agent_name");
         if (agentData) {
             document.getElementById("setupSection").style.display = "none";
@@ -141,10 +147,12 @@
     async function simulateLogin() {
         const id = document.getElementById("driverIdInput").value.trim().toUpperCase();
         const btn = document.getElementById("loginBtn");
-        btn.innerText = "⏳ Verifying with Database...";
+        btn.innerText = "⏳ Verifying...";
         
-        if (id.length < 3) {
-            alert("Please enter a valid Agent ID.");
+        if (id.length < 3) { alert("Enter valid ID"); btn.innerText = "🔓 Secure Login"; return; }
+
+        if (!navigator.onLine) {
+            alert("You are offline. Cannot verify new login without internet.");
             btn.innerText = "🔓 Secure Login";
             return;
         }
@@ -156,7 +164,6 @@
                 body: JSON.stringify({ action: "login", driver_id: id })
             });
             const data = await response.json();
-            
             if (data.status === "success") {
                 localStorage.setItem("swiftdrop_agent_name", data.driver_name);
                 initializeProfile();
@@ -165,34 +172,30 @@
                 btn.innerText = "🔓 Secure Login";
             }
         } catch (e) {
-            alert("Network error. Ensure internet connection is active.");
+            alert("Network error.");
             btn.innerText = "🔓 Secure Login";
         }
     }
 
     async function logout() {
-        if (confirm("Are you sure you want to log out?")) {
+        if (confirm("Log out?")) {
             const agentName = localStorage.getItem("swiftdrop_agent_name");
-            const btn = document.getElementById("logoutBtn");
-            btn.innerText = "Logging out...";
-
-            try {
-                await fetch(DATABASE_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain" },
-                    body: JSON.stringify({ action: "logout", driver_name: agentName })
-                });
-            } catch (e) {}
-
+            if (navigator.onLine) {
+                try {
+                    await fetch(DATABASE_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "text/plain" },
+                        body: JSON.stringify({ action: "logout", driver_name: agentName })
+                    });
+                } catch (e) {}
+            }
             localStorage.removeItem("swiftdrop_agent_name");
             location.reload();
         }
     }
 
     async function fetchTasks(driverName) {
-        const blockDropdown = document.getElementById("blockDropdown");
-        blockDropdown.innerHTML = '<option value="">⏳ Loading Tasks...</option>';
-        
+        if (!navigator.onLine) return;
         try {
             const response = await fetch(DATABASE_URL, {
                 method: "POST",
@@ -200,14 +203,11 @@
                 body: JSON.stringify({ action: "getTasks", driver_name: driverName })
             });
             const data = await response.json();
-            
             if (data.status === "success") {
                 serverTasks = data.tasks; 
                 populateBlockDropdown();
             }
-        } catch (e) {
-            blockDropdown.innerHTML = '<option value="">❌ Connection Error</option>';
-        }
+        } catch (e) {}
     }
 
     function populateBlockDropdown() {
@@ -244,34 +244,21 @@
         filteredTasks.forEach(task => {
             taskDropdown.innerHTML += `<option value="${task.task_id}">${task.location}</option>`;
         });
-        
         clearDynamicItems();
         checkReadiness();
     }
 
-    // --- DYNAMIC ITEM PARSER & GENERATOR ---
     function parseItemsString(itemsStr) {
         if (!itemsStr) return [];
         const parts = itemsStr.toString().split(/[,;\n]+/);
         const result = [];
-
         parts.forEach(part => {
             const trimmed = part.trim();
             if (!trimmed) return;
-            
-            // Format 1: "Inverter: 2" or "Inverter - 2" or "Inverter = 2"
             let match = trimmed.match(/^(.+?)[:=-]\s*(\d+)$/);
-            if (match) {
-                result.push({ name: match[1].trim(), max: parseInt(match[2], 10) });
-                return;
-            }
-            // Format 2: "2 Inverter" or "2 Inverters"
+            if (match) { result.push({ name: match[1].trim(), max: parseInt(match[2], 10) }); return; }
             match = trimmed.match(/^(\d+)\s+(.+)$/);
-            if (match) {
-                result.push({ name: match[2].trim(), max: parseInt(match[1], 10) });
-                return;
-            }
-            // Fallback: Just item name
+            if (match) { result.push({ name: match[2].trim(), max: parseInt(match[1], 10) }); return; }
             result.push({ name: trimmed, max: 10 });
         });
         return result;
@@ -282,57 +269,64 @@
         const container = document.getElementById("dynamicItemContainer");
         container.innerHTML = "";
 
-        if (!taskId) {
-            clearDynamicItems();
-            checkReadiness();
-            return;
-        }
+        if (!taskId) { clearDynamicItems(); checkReadiness(); return; }
 
         const selectedTask = serverTasks.find(t => String(t.task_id) === String(taskId));
         if (!selectedTask || !selectedTask.items) {
-            container.innerHTML = '<div class="empty-items-text">No specific items listed in dispatch sheet.</div>';
-            checkReadiness();
-            return;
+            container.innerHTML = '<div class="empty-items-text">No items listed.</div>';
+            checkReadiness(); return;
         }
 
-        const parsedItems = parseItemsString(selectedTask.items);
-        if (parsedItems.length === 0) {
-            container.innerHTML = '<div class="empty-items-text">No items found for this task.</div>';
-            checkReadiness();
-            return;
-        }
-
-        // Build dynamic HTML dropdowns for each parsed item
-        parsedItems.forEach(item => {
+        currentTaskOriginalItems = parseItemsString(selectedTask.items);
+        currentTaskOriginalItems.forEach(item => {
             const row = document.createElement("div");
             row.className = "item-row";
-
             let optionsHtml = "";
             for (let q = 0; q <= item.max; q++) {
-                // Default pre-select to maximum required quantity
                 const isSelected = (q === item.max) ? "selected" : "";
                 optionsHtml += `<option value="${q}" ${isSelected}>${q}</option>`;
             }
-
-            row.innerHTML = `
-                <span>${item.name} (Max: ${item.max})</span>
-                <select class="qty-select dynamic-qty" data-item-name="${item.name}">${optionsHtml}</select>
-            `;
+            row.innerHTML = `<span>${item.name} (Max: ${item.max})</span><select class="qty-select dynamic-qty" data-item-name="${item.name}">${optionsHtml}</select>`;
             container.appendChild(row);
         });
-
         checkReadiness();
     }
 
     function clearDynamicItems() {
-        document.getElementById("dynamicItemContainer").innerHTML = '<div class="empty-items-text">Select a delivery location above to view assigned items.</div>';
+        document.getElementById("dynamicItemContainer").innerHTML = '<div class="empty-items-text">Select delivery location.</div>';
+    }
+
+    // --- GPS HARDWARE ENFORCEMENT & TIMEOUT ---
+    function requestLocation() {
+        const gpsBtn = document.getElementById("gpsBtn");
+        gpsBtn.innerText = "📍 Acquiring GPS...";
+        
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your mobile browser.");
+            gpsBtn.innerText = "📍 Verify Delivery Location";
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            function(pos) {
+                gpsLat = pos.coords.latitude;
+                gpsLon = pos.coords.longitude;
+                gpsBtn.classList.add("verified");
+                gpsBtn.innerText = "✅ Location Verified";
+                checkReadiness();
+            },
+            function(error) {
+                gpsBtn.innerText = "📍 Verify Delivery Location";
+                alert("❌ GPS Failed / Disabled!\n\nPlease make sure Location Services (GPS) are turned ON in your phone settings, then try again.");
+            },
+            { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+        );
     }
 
     // --- Camera Handling ---
     document.getElementById("challanInput").addEventListener("change", function(e) {
         processImage(e.target.files[0], "challanPreview", "btnChallan", function(b64) { challanBase64 = b64; });
     });
-    
     document.getElementById("locationInput").addEventListener("change", function(e) {
         processImage(e.target.files[0], "locationPreview", "btnLocation", function(b64) { locationBase64 = b64; });
     });
@@ -344,32 +338,10 @@
             document.getElementById(previewId).src = e.target.result;
             document.getElementById(previewId).style.display = "block";
             document.getElementById(btnId).innerText = "🔄 Retake";
-            document.getElementById(btnId).style.background = "#e9ecef";
-            document.getElementById(btnId).style.color = "#333";
             callback(e.target.result);
             checkReadiness();
         };
         reader.readAsDataURL(file);
-    }
-
-    // --- GPS Handling ---
-    function requestLocation() {
-        const gpsBtn = document.getElementById("gpsBtn");
-        gpsBtn.innerText = "📍 Requesting...";
-        navigator.geolocation.getCurrentPosition(
-            function(pos) {
-                gpsLat = pos.coords.latitude;
-                gpsLon = pos.coords.longitude;
-                gpsBtn.classList.add("verified");
-                gpsBtn.innerText = "✅ Location Verified";
-                checkReadiness();
-            },
-            function() { 
-                alert("GPS Denied or Error. Please enable Location Services."); 
-                gpsBtn.innerText = "📍 Verify Delivery Location"; 
-            },
-            { enableHighAccuracy: true }
-        );
     }
 
     function checkReadiness() {
@@ -378,6 +350,7 @@
         btn.disabled = !(task && challanBase64 && locationBase64 && gpsLat);
     }
 
+    // --- SUBMISSION & OFFLINE QUEUE SYNC ---
     async function submitData() {
         const btn = document.getElementById("submitBtn");
         const msg = document.getElementById("statusMsg");
@@ -385,14 +358,21 @@
         
         btn.disabled = true;
         msg.style.display = "block";
-        msg.innerText = "⏳ Uploading securely to database...";
-        
-        // Collect dynamically generated item quantities
+        msg.innerText = "⏳ Processing delivery...";
+
         const dynamicSelects = document.querySelectorAll(".dynamic-qty");
         let itemDeliveries = [];
-        dynamicSelects.forEach(select => {
+        let isFullyCompleted = true;
+
+        dynamicSelects.forEach((select, index) => {
             const itemName = select.getAttribute("data-item-name");
-            itemDeliveries.push(`${itemName}: ${select.value}`);
+            const deliveredQty = parseInt(select.value, 10);
+            const maxQty = currentTaskOriginalItems[index] ? currentTaskOriginalItems[index].max : deliveredQty;
+            
+            if (deliveredQty < maxQty) {
+                isFullyCompleted = false; // Trigger partial delivery state
+            }
+            itemDeliveries.push(`${itemName}: ${deliveredQty}`);
         });
 
         const taskSelect = document.getElementById("taskDropdown");
@@ -407,8 +387,19 @@
             gps_lon: gpsLon,
             challan_b64: challanBase64,
             location_b64: locationBase64,
-            items_delivered: itemDeliveries.join(", ")
+            items_delivered: itemDeliveries.join(", "),
+            is_fully_completed: isFullyCompleted
         };
+
+        if (!navigator.onLine) {
+            // Save to offline local storage queue
+            let queue = JSON.parse(localStorage.getItem("swiftdrop_offline_queue") || "[]");
+            queue.push(payload);
+            localStorage.setItem("swiftdrop_offline_queue", JSON.stringify(queue));
+            msg.innerText = "📡 Saved Offline! Will auto-sync when network returns.";
+            setTimeout(() => { location.reload(); }, 2000);
+            return;
+        }
 
         try {
             const response = await fetch(DATABASE_URL, {
@@ -423,13 +414,49 @@
                 setTimeout(() => { location.reload(); }, 1500);
             } else {
                 msg.style.color = "#dc3545";
-                msg.innerText = "❌ Upload Failed: " + data.detail;
+                msg.innerText = "❌ Failed: " + data.detail;
                 btn.disabled = false;
             }
         } catch (e) {
             msg.style.color = "#dc3545";
-            msg.innerText = "❌ Network Error. Try again.";
-            btn.disabled = false;
+            msg.innerText = "❌ Network error. Saved offline.";
+            let queue = JSON.parse(localStorage.getItem("swiftdrop_offline_queue") || "[]");
+            queue.push(payload);
+            localStorage.setItem("swiftdrop_offline_queue", JSON.stringify(queue));
+            setTimeout(() => { location.reload(); }, 2000);
+        }
+    }
+
+    async function syncOfflineQueue() {
+        let queue = JSON.parse(localStorage.getItem("swiftdrop_offline_queue") || "[]");
+        if (queue.length === 0) return;
+
+        const msg = document.getElementById("statusMsg");
+        msg.style.display = "block";
+        msg.innerText = "🔄 Syncing offline deliveries...";
+
+        while (queue.length > 0) {
+            let payload = queue[0];
+            try {
+                const response = await fetch(DATABASE_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (data.status === "success") {
+                    queue.shift(); // Remove successfully synced item
+                    localStorage.setItem("swiftdrop_offline_queue", JSON.stringify(queue));
+                } else {
+                    break;
+                }
+            } catch (e) {
+                break;
+            }
+        }
+        if (queue.length === 0) {
+            msg.innerText = "✅ All offline deliveries synced!";
+            setTimeout(() => { msg.style.display = "none"; }, 3000);
         }
     }
 </script>
