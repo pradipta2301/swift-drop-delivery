@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swift Drop - Admin Dashboard</title>
+<style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
+    body { background-color: #f4f6f9; padding: 20px; color: #333; }
+    .container { max-width: 900px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 25px; }
+    
+    h1 { font-size: 26px; color: #0d6efd; margin-bottom: 5px; font-style: italic; font-weight: 800; text-align: center; }
+    p.subtitle { text-align: center; color: #666; margin-bottom: 25px; font-size: 14px; }
+
+    /* Login Box */
+    #adminLoginBox { max-width: 350px; margin: 50px auto; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #ddd; text-align: center; }
+    input[type="password"], input[type="text"], select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; margin-bottom: 15px; }
+    button { background: #0d6efd; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; }
+    button:hover { background: #0b5ed7; }
+
+    /* Dashboard Layout */
+    #adminDashboard { display: none; }
+    .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; }
+    .nav-tab { padding: 10px 15px; background: #e9ecef; border-radius: 6px; cursor: pointer; font-weight: bold; color: #495057; border: none; width: auto; }
+    .nav-tab.active { background: #0d6efd; color: white; }
+
+    .section-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    h3 { margin-bottom: 15px; color: #212529; font-size: 18px; }
+
+    /* Tables */
+    .table-responsive { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; font-size: 13px; }
+    th, td { border: 1px solid #dee2e6; padding: 10px; text-align: left; }
+    th { background: #0d6efd; color: white; }
+    tr:nth-child(even) { background: #f8f9fa; }
+    
+    .status-badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+    .status-pending { background: #ffc107; color: #000; }
+    .status-completed { background: #198754; color: white; }
+    .status-partial { background: #fd7e14; color: white; }
+
+    #loadingMsg { text-align: center; font-weight: bold; color: #0d6efd; margin: 20px 0; display: none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Swift Drop Admin</h1>
+    <p class="subtitle">Secure Dispatch & Operations Management</p>
+
+    <!-- ADMIN LOGIN -->
+    <div id="adminLoginBox">
+        <h3>Admin Portal Login</h3>
+        <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Enter management password to proceed.</p>
+        <input type="password" id="adminPassword" placeholder="Enter Password">
+        <button onclick="verifyAdmin()">Login to Portal</button>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="adminDashboard">
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchSection('dispatch')">➕ Assign New Task</button>
+            <button class="nav-tab" onclick="switchSection('live')">📊 Live Deliveries & Reports</button>
+        </div>
+
+        <!-- SECTION 1: ASSIGN NEW TASK -->
+        <div id="sectionDispatch" class="section-card">
+            <h3>Create & Assign Delivery Task</h3>
+            <label>Task ID / Challan Number</label>
+            <input type="text" id="newTaskId" placeholder="e.g., T-105">
+
+            <label>Date (YYYY-MM-DD)</label>
+            <input type="text" id="newDate" placeholder="2026-08-28">
+
+            <label>Assign to Driver Name</label>
+            <select id="newDriver">
+                <option value="">-- Select Driver --</option>
+                <option value="Pratik Moharana">Pratik Moharana</option>
+                <option value="Gupteswar Ratha">Gupteswar Ratha</option>
+                <option value="Jeeban Parida">Jeeban Parida</option>
+            </select>
+
+            <label>Block</label>
+            <input type="text" id="newBlock" placeholder="e.g., Rayagada">
+
+            <label>Delivery Location (School Name)</label>
+            <input type="text" id="newLocation" placeholder="e.g., Ashram School Jallo">
+
+            <label>Items to Deliver (Format: Item: Qty, Item: Qty)</label>
+            <input type="text" id="newItems" placeholder="Inverter: 2, Battery: 4">
+
+            <button onclick="addNewTask()">🚀 Push Task to Driver App</button>
+        </div>
+
+        <!-- SECTION 2: LIVE REPORT -->
+        <div id="sectionLive" class="section-card" style="display:none;">
+            <h3>Live Delivery Logs & Status</h3>
+            <button onclick="loadDashboardData()" style="width: auto; margin-bottom: 15px; padding: 8px 15px; font-size: 13px;">🔄 Refresh Data</button>
+            <div id="loadingMsg">Loading live data from Google Sheet...</div>
+            
+            <div class="table-responsive">
+                <table id="liveTable">
+                    <thead>
+                        <tr>
+                            <th>Task ID</th>
+                            <th>Driver</th>
+                            <th>Location</th>
+                            <th>Items Delivered</th>
+                            <th>Status</th>
+                            <th>Photos & Maps</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // PASTE YOUR GOOGLE APPS SCRIPT URL HERE
+    // ==========================================
+    const DATABASE_URL = "https://script.google.com/macros/s/AKfycbxm_C8OVt80XsMzGIV9_oyo2G8szvUw66BWZG3lGMW_IWL45JppaFOlIP0f3FAIH8qu3Q/exec";
+    const ADMIN_SECRET = "Amit123"; // Change this to your preferred admin password
+
+    function verifyAdmin() {
+        const pass = document.getElementById("adminPassword").value;
+        if (pass === ADMIN_SECRET) {
+            document.getElementById("adminLoginBox").style.display = "none";
+            document.getElementById("adminDashboard").style.display = "block";
+            // Pre-fill today's date
+            document.getElementById("newDate").value = new Date().toISOString().slice(0, 10);
+        } else {
+            alert("❌ Incorrect Password");
+        }
+    }
+
+    function switchSection(sec) {
+        document.getElementById("sectionDispatch").style.display = (sec === 'dispatch') ? "block" : "none";
+        document.getElementById("sectionLive").style.display = (sec === 'live') ? "block" : "none";
+        if (sec === 'live') {
+            loadDashboardData();
+        }
+    }
+
+    async function addNewTask() {
+        const payload = {
+            action: "adminAddTask",
+            task_id: document.getElementById("newTaskId").value.trim(),
+            date: document.getElementById("newDate").value.trim(),
+            driver_name: document.getElementById("newDriver").value,
+            block: document.getElementById("newBlock").value.trim(),
+            location: document.getElementById("newLocation").value.trim(),
+            items: document.getElementById("newItems").value.trim()
+        };
+
+        if (!payload.task_id || !payload.driver_name || !payload.location) {
+            alert("Please fill out Task ID, Driver, and Location.");
+            return;
+        }
+
+        try {
+            const response = await fetch(DATABASE_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if (data.status === "success") {
+                alert("✅ Task successfully assigned and pushed to driver app!");
+                document.getElementById("newTaskId").value = "";
+                document.getElementById("newLocation").value = "";
+                document.getElementById("newItems").value = "";
+            } else {
+                alert("❌ Failed: " + data.detail);
+            }
+        } catch (e) {
+            alert("Network error connecting to database.");
+        }
+    }
+
+    async function loadDashboardData() {
+        const loading = document.getElementById("loadingMsg");
+        const tbody = document.getElementById("tableBody");
+        loading.style.display = "block";
+        tbody.innerHTML = "";
+
+        try {
+            const response = await fetch(DATABASE_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify({ action: "adminGetReport" })
+            });
+            const data = await response.json();
+            
+            if (data.status === "success") {
+                loading.style.display = "none";
+                data.tasks.forEach(t => {
+                    let badgeClass = "status-pending";
+                    if (t.status.includes("Completed")) badgeClass = "status-completed";
+                    else if (t.status.includes("Partial")) badgeClass = "status-partial";
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><b>${t.task_id}</b></td>
+                            <td>${t.driver}</td>
+                            <td>${t.location} (${t.block})</td>
+                            <td>${t.items}</td>
+                            <td><span class="status-badge ${badgeClass}">${t.status}</span></td>
+                            <td>
+                                ${t.maps ? `<a href="${t.maps}" target="_blank">🗺️ Map</a><br>` : ''}
+                                ${t.challan ? `<a href="${t.challan}" target="_blank">📄 Challan</a><br>` : ''}
+                                ${t.loc_photo ? `<a href="${t.loc_photo}" target="_blank">🏫 Location</a>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch (e) {
+            loading.style.display = "none";
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Failed to load live data. Check connection.</td></tr>`;
+        }
+    }
+</script>
+</body>
+</html>
