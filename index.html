@@ -85,6 +85,9 @@
             <div class="empty-items-text">Select a delivery location above.</div>
         </div>
 
+        <label>Challan Number (Manual Entry)</label>
+        <input type="text" id="challanNoInput" placeholder="Enter Challan No. from physical paper">
+
         <label>Photographic Proof</label>
         <div class="grid-2">
             <div>
@@ -133,7 +136,6 @@
     function initializeProfile() {
         updateOnlineStatus();
         
-        // Auto-expire session if it's a new calendar day
         const lastLoginDate = localStorage.getItem("swiftdrop_login_date");
         const todayStr = new Date().toISOString().slice(0, 10);
         if (lastLoginDate && lastLoginDate !== todayStr) {
@@ -393,6 +395,7 @@
             gps_lon: gpsLon,
             challan_b64: challanBase64,
             location_b64: locationBase64,
+            challan_no: document.getElementById("challanNoInput").value.trim(),
             items_delivered: itemDeliveries.join(", "),
             is_fully_completed: isFullyCompleted
         };
