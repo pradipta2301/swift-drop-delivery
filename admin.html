@@ -135,7 +135,7 @@
 </div>
 
 <script>
-    // ⚠️ Ensure your exact Apps Script Web App URL is pasted here!
+    // ⚠️ PASTE YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URL HERE
     const DATABASE_URL = "https://script.google.com/macros/s/YOUR_ACTUAL_SCRIPT_ID/exec";
     const ADMIN_SECRET = "swift123"; 
 
@@ -162,22 +162,21 @@
                 body: JSON.stringify({ action: "getStaff" })
             });
             const textResponse = await response.text();
-            console.log("Server raw response:", textResponse);
-            
             const data = JSON.parse(textResponse);
-            if (data.status === "success") {
+            
+            if (data.status === "success" && data.drivers) {
                 DRIVER_LIST = data.drivers;
                 const bulkDriver = document.getElementById("bulkDriver");
                 bulkDriver.innerHTML = '<option value="">-- Select Driver --</option>';
                 DRIVER_LIST.forEach(d => {
-                    bulkDriver.innerHTML += `<option value="${d.name}">${d.name} (${d.mobile || 'No Mobile'})</option>`;
+                    bulkDriver.innerHTML += `<option value="${d.name}">${d.name} (${d.mobile || ''})</option>`;
                 });
             } else {
-                alert("Server error loading staff: " + data.detail);
+                alert("Could not load drivers from sheet. Check Staff_List tab.");
             }
         } catch (e) {
-            console.error("Fetch failed:", e);
-            alert("Failed to connect to backend. Check DATABASE_URL in admin.html.");
+            console.error("Staff fetch error:", e);
+            alert("Connection error when fetching staff list.");
         }
     }
 
@@ -200,7 +199,7 @@
                 
                 const jsonRows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                 if (jsonRows.length < 2) {
-                    alert("Excel file is empty or formatted incorrectly.");
+                    alert("Excel file is empty.");
                     return;
                 }
 
