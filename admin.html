@@ -135,7 +135,7 @@
 </div>
 
 <script>
-    // ⚠️ REPLACE WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
+    // ⚠️ Ensure your exact Apps Script Web App URL is pasted here!
     const DATABASE_URL = "https://script.google.com/macros/s/YOUR_ACTUAL_SCRIPT_ID/exec";
     const ADMIN_SECRET = "swift123"; 
 
@@ -161,7 +161,10 @@
                 headers: { "Content-Type": "text/plain" },
                 body: JSON.stringify({ action: "getStaff" })
             });
-            const data = await response.json();
+            const textResponse = await response.text();
+            console.log("Server raw response:", textResponse);
+            
+            const data = JSON.parse(textResponse);
             if (data.status === "success") {
                 DRIVER_LIST = data.drivers;
                 const bulkDriver = document.getElementById("bulkDriver");
@@ -169,9 +172,12 @@
                 DRIVER_LIST.forEach(d => {
                     bulkDriver.innerHTML += `<option value="${d.name}">${d.name} (${d.mobile || 'No Mobile'})</option>`;
                 });
+            } else {
+                alert("Server error loading staff: " + data.detail);
             }
         } catch (e) {
-            console.error("Failed to fetch drivers", e);
+            console.error("Fetch failed:", e);
+            alert("Failed to connect to backend. Check DATABASE_URL in admin.html.");
         }
     }
 
