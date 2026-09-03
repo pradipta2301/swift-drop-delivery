@@ -135,8 +135,8 @@
 </div>
 
 <script>
-    // ⚠️ PASTE YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URL HERE
-    const DATABASE_URL = "https://script.google.com/macros/s/YOUR_ACTUAL_SCRIPT_ID/exec";
+    // ⚠️ PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BETWEEN THE QUOTES BELOW:
+    const DATABASE_URL = "https://script.google.com/macros/s/AKfycbxm_C8OVt80XsMzGIV9_oyo2G8szvUw66BWZG3lGMW_IWL45JppaFOlIP0f3FAIH8qu3Q/exec";
     const ADMIN_SECRET = "swift123"; 
 
     let DRIVER_LIST = [];
@@ -176,7 +176,7 @@
             }
         } catch (e) {
             console.error("Staff fetch error:", e);
-            alert("Connection error when fetching staff list.");
+            alert("Failed to connect to backend. Check DATABASE_URL in admin.html.");
         }
     }
 
