@@ -45,7 +45,6 @@
     <h1>Swift Drop Admin</h1>
     <p class="subtitle">Secure Dispatch & Operations Management</p>
 
-    <!-- ADMIN LOGIN -->
     <div id="adminLoginBox">
         <h3>Admin Portal Login</h3>
         <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Enter management password to proceed.</p>
@@ -53,14 +52,12 @@
         <button onclick="verifyAdmin()">Login to Portal</button>
     </div>
 
-    <!-- MAIN DASHBOARD -->
     <div id="adminDashboard">
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="switchSection('dispatch')">📂 Upload Excel & Assign Tasks</button>
             <button class="nav-tab" onclick="switchSection('live')">📊 Live Deliveries & Reports</button>
         </div>
 
-        <!-- SECTION 1: UPLOAD EXCEL & ASSIGN -->
         <div id="sectionDispatch" class="section-card">
             <h3>Upload Master Dispatch Excel</h3>
             <div class="drop-zone" onclick="document.getElementById('excelUpload').click()">
@@ -72,7 +69,6 @@
                 <h3>Review Extracted Tasks & Assign Drivers</h3>
                 <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Select multiple tasks using checkboxes, then apply Date and Driver in bulk below.</p>
                 
-                <!-- BULK ASSIGN TOOLBAR -->
                 <div class="bulk-toolbar">
                     <div>
                         <label>Bulk Date for Selected</label>
@@ -109,7 +105,6 @@
             </div>
         </div>
 
-        <!-- SECTION 2: LIVE REPORT -->
         <div id="sectionLive" class="section-card" style="display:none;">
             <h3>Live Delivery Logs & Status</h3>
             <button onclick="loadDashboardData()" style="width: auto; margin-bottom: 15px; padding: 8px 15px; font-size: 13px;">🔄 Refresh Data</button>
@@ -156,10 +151,8 @@
 
     async function fetchDriversList() {
         try {
-            const response = await fetch(DATABASE_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify({ action: "getStaff" })
+            const response = await fetch(`${DATABASE_URL}?action=getStaff`, {
+                method: "GET"
             });
             const textResponse = await response.text();
             const data = JSON.parse(textResponse);
