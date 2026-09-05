@@ -2,470 +2,219 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Swift Drop</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swift Drop - Driver Portal</title>
 <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
-    body { background-color: #f4f6f9; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-    .card { background: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.10); padding: 15px; width: 100%; max-width: 450px; }
-    
-    h1 { font-size: 24px; color: #0d6efd; text-align: center; margin-bottom: 15px; font-style: italic; font-weight: 800;}
-    
-    .agent-box { display: flex; justify-content: space-between; align-items: center; border: 2px solid #333; padding: 12px; font-weight: bold; font-size: 16px; border-radius: 6px; margin-bottom: 20px; background: #f8f9fa; }
-    .btn-logout { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; }
-    
-    .tabs { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 15px; }
-    .tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.3s;}
-    .tab.active { color: #0d6efd; border-bottom: 3px solid #0d6efd; }
+    body { background-color: #f4f6f9; color: #333; padding: 15px; }
+    .container { max-width: 450px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 20px; }
+    h1 { font-size: 22px; color: #0d6efd; text-align: center; margin-bottom: 5px; font-weight: 800; }
+    p.subtitle { text-align: center; color: #666; font-size: 13px; margin-bottom: 20px; }
 
-    label { font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px; }
-    select.task-select, input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; margin-bottom: 15px; background: #fff; font-weight: bold;}
+    input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; margin-bottom: 12px; }
+    button { background: #0d6efd; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; }
+    button:hover { background: #0b5ed7; }
 
-    .item-section { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 12px; margin-bottom: 15px; min-height: 50px; }
-    .item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #dee2e6; }
-    .item-row:last-child { border-bottom: none; }
-    .item-row span { font-size: 14px; font-weight: bold; color: #333; }
-    .item-row select { padding: 6px 12px; font-size: 15px; border-radius: 6px; border: 1px solid #ccc; background: #fff; width: 80px; font-weight: bold;}
-    .empty-items-text { color: #888; font-size: 13px; text-align: center; margin: 10px 0; }
+    .card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+    .nav-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+    .nav-btn { flex: 1; padding: 10px; background: #e9ecef; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; }
+    .nav-btn.active { background: #0d6efd; color: white; }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;}
-    .btn-camera { padding: 12px 5px; font-size: 13px; font-weight: bold; border: 1px solid #0d6efd; background: #e7f1ff; color: #0d6efd; border-radius: 6px; cursor: pointer; text-align: center; width: 100%; }
-    .preview-box { height: 110px; border: 2px dashed #ccc; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: #fafafa; overflow: hidden; }
-    .preview-box img { width: 100%; height: 100%; object-fit: contain; display: none; }
-    
-    .btn-action { width: 100%; padding: 14px; font-size: 16px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 10px; color: #fff; }
-    .btn-primary { background-color: #0d6efd; }
-    .btn-gps { background-color: #6c757d; }
-    .btn-gps.verified { background-color: #198754; }
-    .btn-submit { background-color: #198754; }
-    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-    
-    #offlineBanner { background: #ffc107; color: #000; text-align: center; padding: 8px; font-weight: bold; font-size: 13px; display: none; border-radius: 4px; margin-bottom: 10px;}
-    #setupSection { display: flex; flex-direction: column; gap: 10px; }
+    .expense-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .expense-row label { font-size: 14px; font-weight: 600; color: #495057; }
+    .expense-row input { width: 130px; margin-bottom: 0; text-align: right; }
+    .total-bar { background: #e7f1ff; border: 1px solid #b6d4fe; padding: 12px; border-radius: 8px; font-weight: bold; display: flex; justify-content: space-between; font-size: 16px; color: #084298; margin-bottom: 15px; }
 </style>
 </head>
-<body onload="initializeProfile()">
+<body>
 
-<div class="card">
+<div class="container">
     <h1>Swift Drop</h1>
-    <div id="offlineBanner">📡 Offline Mode: Submissions will auto-sync when connection returns.</div>
+    <p class="subtitle">Driver Operations & Expense Portal</p>
 
-    <!-- 1. INITIAL LOGIN -->
-    <div id="setupSection">
-        <label style="text-align:center; font-size: 15px; color: #333;">Biometric / Credential Login</label>
-        <input type="text" id="driverIdInput" placeholder="Enter Agent ID (e.g., DRV-01)">
-        <button class="btn-action btn-primary" id="loginBtn" onclick="simulateLogin()">🔓 Secure Login</button>
+    <!-- LOGIN VIEW -->
+    <div id="loginView">
+        <div class="card">
+            <h3 style="margin-bottom: 10px; font-size: 16px;">Driver Login</h3>
+            <input type="text" id="driverIdInput" placeholder="Enter Driver ID (e.g. DRV-01)">
+            <button onclick="driverLogin()">Start Shift</button>
+        </div>
     </div>
 
-    <!-- 2. MAIN APP -->
-    <div id="mainApp" style="display:none;">
-        
-        <div class="agent-box">
-            <span>👤 <span id="displayAgentName">Agent Name</span></span>
-            <button class="btn-logout" id="logoutBtn" onclick="logout()">Logout</button>
+    <!-- MAIN APP VIEW -->
+    <div id="appView" style="display:none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #e7f1ff; padding: 10px; border-radius: 8px;">
+            <span id="welcomeDriver" style="font-weight: bold; color: #084298; font-size: 14px;"></span>
+            <button onclick="driverLogout()" style="width: auto; padding: 6px 12px; background: #dc3545; font-size: 12px;">End Shift</button>
         </div>
 
-        <div class="tabs">
-            <div class="tab active" id="tabToday" onclick="switchTab('today')">Today Task</div>
-            <div class="tab" id="tabPending" onclick="switchTab('pending')">Pending Task</div>
+        <div class="nav-bar">
+            <button class="nav-btn active" id="tabTaskBtn" onclick="switchTab('tasks')">📦 Tasks</button>
+            <button class="nav-btn" id="tabExpBtn" onclick="switchTab('expenses')">💰 Daily Expenses</button>
         </div>
 
-        <label>Filter by Block</label>
-        <select id="blockDropdown" class="task-select" onchange="filterSchools()">
-            <option value="">-- Fetching Blocks... --</option>
-        </select>
-
-        <label>Select Delivery Location</label>
-        <select id="taskDropdown" class="task-select" onchange="onTaskSelected()">
-            <option value="">-- Waiting for Block Selection --</option>
-        </select>
-
-        <label>Confirm Delivered Quantities</label>
-        <div class="item-section" id="dynamicItemContainer">
-            <div class="empty-items-text">Select a delivery location above.</div>
+        <!-- TASKS SECTION -->
+        <div id="sectionTasks">
+            <h3 style="font-size: 16px; margin-bottom: 10px;">Assigned Deliveries</h3>
+            <div id="taskList"><p style="color:#666; font-size:14px;">Loading tasks...</p></div>
         </div>
 
-        <label>Challan Number (Manual Entry)</label>
-        <input type="text" id="challanNoInput" placeholder="Enter Challan No. from physical paper">
+        <!-- EXPENSES SECTION -->
+        <div id="sectionExpenses" style="display:none;">
+            <div class="card">
+                <h3 style="font-size: 16px; margin-bottom: 12px;">Daily Expense Log</h3>
+                
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 12px; font-weight: bold; color: #666; display: block; margin-bottom: 4px;">DATE (Locked to Today)</label>
+                    <input type="date" id="expDate" readonly style="background: #e9ecef; cursor: not-allowed; margin-bottom: 0;">
+                </div>
 
-        <label>Photographic Proof</label>
-        <div class="grid-2">
-            <div>
-                <button class="btn-camera" onclick="document.getElementById('challanInput').click()" id="btnChallan">📄 Capture Challan</button>
-                <input type="file" id="challanInput" accept="image/*" capture="environment" style="display:none;">
-                <div class="preview-box" style="margin-top: 8px;"><img id="challanPreview"></div>
+                <div class="expense-row"><label>Food (₹)</label><input type="number" id="expFood" value="0" oninput="calcTotal()"></div>
+                <div class="expense-row"><label>Labour (₹)</label><input type="number" id="expLabour" value="0" oninput="calcTotal()"></div>
+                <div class="expense-row"><label>Hotel (₹)</label><input type="number" id="expHotel" value="0" oninput="calcTotal()"></div>
+                <div class="expense-row"><label>Oil (₹)</label><input type="number" id="expOil" value="0" oninput="calcTotal()"></div>
+                <div class="expense-row"><label>Bus/Auto (₹)</label><input type="number" id="expBusAuto" value="0" oninput="calcTotal()"></div>
+                <div class="expense-row"><label>Miscellaneous (₹)</label><input type="number" id="expMisc" value="0" oninput="calcTotal()"></div>
+
+                <div class="total-bar">
+                    <span>TOTAL</span>
+                    <span id="expTotalDisplay">₹0</span>
+                </div>
+
+                <button onclick="submitExpenses()" style="background: #198754;">Submit Today's Expenses</button>
             </div>
-            <div>
-                <button class="btn-camera" onclick="document.getElementById('locationInput').click()" id="btnLocation">🏫 Capture Location</button>
-                <input type="file" id="locationInput" accept="image/*" capture="environment" style="display:none;">
-                <div class="preview-box" style="margin-top: 8px;"><img id="locationPreview"></div>
-            </div>
         </div>
-
-        <button class="btn-action btn-gps" id="gpsBtn" onclick="requestLocation()">📍 Verify Delivery Location</button>
-        <button class="btn-action btn-submit" id="submitBtn" onclick="submitData()" disabled>🚀 Submit Delivery</button>
-        
-        <div id="statusMsg" style="text-align: center; margin-top: 10px; font-weight: bold; color: #198754; display: none;"></div>
     </div>
 </div>
 
 <script>
     const DATABASE_URL = "https://script.google.com/macros/s/AKfycbxm_C8OVt80XsMzGIV9_oyo2G8szvUw66BWZG3lGMW_IWL45JppaFOlIP0f3FAIH8qu3Q/exec";
+    let currentDriverName = "";
 
-    let challanBase64 = null;
-    let locationBase64 = null;
-    let gpsLat = null;
-    let gpsLon = null;
-    let serverTasks = []; 
-    let activeTab = 'today';
-    let currentTaskOriginalItems = [];
+    function driverLogin() {
+        const driverId = document.getElementById("driverIdInput").value.trim();
+        if (!driverId) { alert("Please enter your Driver ID"); return; }
 
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-
-    function updateOnlineStatus() {
-        const banner = document.getElementById("offlineBanner");
-        if (!navigator.onLine) {
-            banner.style.display = "block";
-        } else {
-            banner.style.display = "none";
-            syncOfflineQueue();
-        }
-    }
-
-    function initializeProfile() {
-        updateOnlineStatus();
-        
-        const lastLoginDate = localStorage.getItem("swiftdrop_login_date");
-        const todayStr = new Date().toISOString().slice(0, 10);
-        if (lastLoginDate && lastLoginDate !== todayStr) {
-            localStorage.clear();
-            alert("New day detected. Session expired. Please log in again.");
-            location.reload();
-            return;
-        }
-
-        const agentData = localStorage.getItem("swiftdrop_agent_name");
-        if (agentData) {
-            document.getElementById("setupSection").style.display = "none";
-            document.getElementById("mainApp").style.display = "block";
-            document.getElementById("displayAgentName").innerText = agentData;
-            fetchTasks(agentData);
-        }
-    }
-
-    async function simulateLogin() {
-        const id = document.getElementById("driverIdInput").value.trim().toUpperCase();
-        const btn = document.getElementById("loginBtn");
-        btn.innerText = "⏳ Verifying...";
-        
-        if (id.length < 3) { alert("Enter valid ID"); btn.innerText = "🔓 Secure Login"; return; }
-
-        if (!navigator.onLine) {
-            alert("You are offline. Cannot verify new login without internet.");
-            btn.innerText = "🔓 Secure Login";
-            return;
-        }
-
-        try {
-            const response = await fetch(DATABASE_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify({ action: "login", driver_id: id })
-            });
-            const data = await response.json();
+        fetch(DATABASE_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify({ action: "login", driver_id: driverId })
+        })
+        .then(res => res.json())
+        .then(data => {
             if (data.status === "success") {
-                localStorage.setItem("swiftdrop_agent_name", data.driver_name);
-                localStorage.setItem("swiftdrop_login_date", new Date().toISOString().slice(0, 10));
-                initializeProfile();
+                currentDriverName = data.driver_name;
+                document.getElementById("welcomeDriver").innerText = `Driver: ${currentDriverName}`;
+                document.getElementById("loginView").style.display = "none";
+                document.getElementById("appView").style.display = "block";
+                
+                // Set today's date for expenses
+                document.getElementById("expDate").value = new Date().toISOString().slice(0, 10);
+                loadTasks();
             } else {
                 alert("❌ " + data.detail);
-                btn.innerText = "🔓 Secure Login";
             }
-        } catch (e) {
-            alert("Network error.");
-            btn.innerText = "🔓 Secure Login";
-        }
+        })
+        .catch(err => alert("Connection error during login."));
     }
 
-    async function logout() {
-        if (confirm("Log out?")) {
-            const agentName = localStorage.getItem("swiftdrop_agent_name");
-            if (navigator.onLine) {
-                try {
-                    await fetch(DATABASE_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "text/plain" },
-                        body: JSON.stringify({ action: "logout", driver_name: agentName })
-                    });
-                } catch (e) {}
-            }
-            localStorage.clear();
+    function driverLogout() {
+        if (!confirm("End your shift?")) return;
+        fetch(DATABASE_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify({ action: "logout", driver_name: currentDriverName })
+        }).then(() => {
             location.reload();
-        }
-    }
-
-    async function fetchTasks(driverName) {
-        if (!navigator.onLine) return;
-        try {
-            const response = await fetch(DATABASE_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify({ action: "getTasks", driver_name: driverName })
-            });
-            const data = await response.json();
-            if (data.status === "success") {
-                serverTasks = data.tasks; 
-                populateBlockDropdown();
-            }
-        } catch (e) {}
-    }
-
-    function populateBlockDropdown() {
-        const blockDropdown = document.getElementById("blockDropdown");
-        const availableTasks = serverTasks.filter(t => activeTab === 'today' ? t.is_today : !t.is_today);
-        const uniqueBlocks = [...new Set(availableTasks.map(t => t.block))];
-
-        blockDropdown.innerHTML = '<option value="">-- Select Block --</option>';
-        uniqueBlocks.forEach(block => {
-            if (block) blockDropdown.innerHTML += `<option value="${block}">${block}</option>`;
         });
-        filterSchools();
     }
 
     function switchTab(tab) {
-        activeTab = tab;
-        document.getElementById("tabToday").classList.toggle("active", tab === 'today');
-        document.getElementById("tabPending").classList.toggle("active", tab === 'pending');
-        populateBlockDropdown();
-        clearDynamicItems();
-        checkReadiness();
-    }
-
-    function filterSchools() {
-        const block = document.getElementById("blockDropdown").value;
-        const taskDropdown = document.getElementById("taskDropdown");
-        taskDropdown.innerHTML = '<option value="">-- Select Delivery Location --</option>';
-        
-        const filteredTasks = serverTasks.filter(t => {
-            const tabCondition = (activeTab === 'today') ? t.is_today : !t.is_today;
-            return tabCondition && t.block === block;
-        });
-
-        filteredTasks.forEach(task => {
-            taskDropdown.innerHTML += `<option value="${task.task_id}">${task.location}</option>`;
-        });
-        clearDynamicItems();
-        checkReadiness();
-    }
-
-    function parseItemsString(itemsStr) {
-        if (!itemsStr) return [];
-        const parts = itemsStr.toString().split(/[,;\n]+/);
-        const result = [];
-        parts.forEach(part => {
-            const trimmed = part.trim();
-            if (!trimmed) return;
-            let match = trimmed.match(/^(.+?)[:=-]\s*(\d+)$/);
-            if (match) { result.push({ name: match[1].trim(), max: parseInt(match[2], 10) }); return; }
-            match = trimmed.match(/^(\d+)\s+(.+)$/);
-            if (match) { result.push({ name: match[2].trim(), max: parseInt(match[1], 10) }); return; }
-            result.push({ name: trimmed, max: 10 });
-        });
-        return result;
-    }
-
-    function onTaskSelected() {
-        const taskId = document.getElementById("taskDropdown").value;
-        const container = document.getElementById("dynamicItemContainer");
-        container.innerHTML = "";
-
-        if (!taskId) { clearDynamicItems(); checkReadiness(); return; }
-
-        const selectedTask = serverTasks.find(t => String(t.task_id) === String(taskId));
-        if (!selectedTask || !selectedTask.items) {
-            container.innerHTML = '<div class="empty-items-text">No items listed.</div>';
-            checkReadiness(); return;
+        if (tab === 'tasks') {
+            document.getElementById("sectionTasks").style.display = "block";
+            document.getElementById("sectionExpenses").style.display = "none";
+            document.getElementById("tabTaskBtn").classList.add("active");
+            document.getElementById("tabExpBtn").classList.remove("active");
+            loadTasks();
+        } else {
+            document.getElementById("sectionTasks").style.display = "none";
+            document.getElementById("sectionExpenses").style.display = "block";
+            document.getElementById("tabTaskBtn").classList.remove("active");
+            document.getElementById("tabExpBtn").classList.add("active");
         }
-
-        currentTaskOriginalItems = parseItemsString(selectedTask.items);
-        currentTaskOriginalItems.forEach(item => {
-            const row = document.createElement("div");
-            row.className = "item-row";
-            let optionsHtml = "";
-            for (let q = 0; q <= item.max; q++) {
-                const isSelected = (q === item.max) ? "selected" : "";
-                optionsHtml += `<option value="${q}" ${isSelected}>${q}</option>`;
-            }
-            row.innerHTML = `<span>${item.name} (Max: ${item.max})</span><select class="qty-select dynamic-qty" data-item-name="${item.name}">${optionsHtml}</select>`;
-            container.appendChild(row);
-        });
-        checkReadiness();
     }
 
-    function clearDynamicItems() {
-        document.getElementById("dynamicItemContainer").innerHTML = '<div class="empty-items-text">Select delivery location.</div>';
-    }
+    function loadTasks() {
+        const taskList = document.getElementById("taskList");
+        taskList.innerHTML = "<p style='color:#666;'>Loading tasks...</p>";
 
-    function requestLocation() {
-        const gpsBtn = document.getElementById("gpsBtn");
-        gpsBtn.innerText = "📍 Acquiring GPS...";
-        
-        if (!navigator.geolocation) {
-            alert("Geolocation not supported.");
-            gpsBtn.innerText = "📍 Verify Delivery Location";
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-            function(pos) {
-                gpsLat = pos.coords.latitude;
-                gpsLon = pos.coords.longitude;
-                gpsBtn.classList.add("verified");
-                gpsBtn.innerText = "✅ Location Verified";
-                checkReadiness();
-            },
-            function(error) {
-                gpsBtn.innerText = "📍 Verify Delivery Location";
-                alert("❌ GPS Failed / Disabled!\n\nPlease turn on Location Services (GPS) in your phone settings.");
-            },
-            { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-        );
-    }
-
-    document.getElementById("challanInput").addEventListener("change", function(e) {
-        processImage(e.target.files[0], "challanPreview", "btnChallan", function(b64) { challanBase64 = b64; });
-    });
-    document.getElementById("locationInput").addEventListener("change", function(e) {
-        processImage(e.target.files[0], "locationPreview", "btnLocation", function(b64) { locationBase64 = b64; });
-    });
-
-    function processImage(file, previewId, btnId, callback) {
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById(previewId).src = e.target.result;
-            document.getElementById(previewId).style.display = "block";
-            document.getElementById(btnId).innerText = "🔄 Retake";
-            callback(e.target.result);
-            checkReadiness();
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function checkReadiness() {
-        const task = document.getElementById("taskDropdown").value;
-        const btn = document.getElementById("submitBtn");
-        btn.disabled = !(task && challanBase64 && locationBase64 && gpsLat);
-    }
-
-    async function submitData() {
-        const btn = document.getElementById("submitBtn");
-        const msg = document.getElementById("statusMsg");
-        const agentName = localStorage.getItem("swiftdrop_agent_name");
-        
-        btn.disabled = true;
-        msg.style.display = "block";
-        msg.innerText = "⏳ Processing delivery...";
-
-        const dynamicSelects = document.querySelectorAll(".dynamic-qty");
-        let itemDeliveries = [];
-        let isFullyCompleted = true;
-
-        dynamicSelects.forEach((select, index) => {
-            const itemName = select.getAttribute("data-item-name");
-            const deliveredQty = parseInt(select.value, 10);
-            const maxQty = currentTaskOriginalItems[index] ? currentTaskOriginalItems[index].max : deliveredQty;
-            
-            if (deliveredQty < maxQty) {
-                isFullyCompleted = false;
-            }
-            itemDeliveries.push(`${itemName}: ${deliveredQty}`);
-        });
-
-        const taskSelect = document.getElementById("taskDropdown");
-        const locationName = taskSelect.options[taskSelect.selectedIndex].text;
-
-        const payload = {
-            action: "submit",
-            task_id: taskSelect.value,
-            driver_name: agentName,
-            delivery_location: locationName,
-            gps_lat: gpsLat,
-            gps_lon: gpsLon,
-            challan_b64: challanBase64,
-            location_b64: locationBase64,
-            challan_no: document.getElementById("challanNoInput").value.trim(),
-            items_delivered: itemDeliveries.join(", "),
-            is_fully_completed: isFullyCompleted
-        };
-
-        if (!navigator.onLine) {
-            let queue = JSON.parse(localStorage.getItem("swiftdrop_offline_queue") || "[]");
-            queue.push(payload);
-            localStorage.setItem("swiftdrop_offline_queue", JSON.stringify(queue));
-            msg.innerText = "📡 Saved Offline! Will auto-sync when network returns.";
-            setTimeout(() => { location.reload(); }, 2000);
-            return;
-        }
-
-        try {
-            const response = await fetch(DATABASE_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify(payload)
-            });
-            const data = await response.json();
-            
+        fetch(DATABASE_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify({ action: "getTasks", driver_name: currentDriverName })
+        })
+        .then(res => res.json())
+        .then(data => {
             if (data.status === "success") {
-                msg.innerText = "✅ Success! Delivery Logged.";
-                setTimeout(() => { location.reload(); }, 1500);
-            } else {
-                msg.style.color = "#dc3545";
-                msg.innerText = "❌ Failed: " + data.detail;
-                btn.disabled = false;
+                taskList.innerHTML = "";
+                if (data.tasks.length === 0) {
+                    taskList.innerHTML = "<p style='color:#666;'>No pending tasks found for today.</p>";
+                    return;
+                }
+                data.tasks.forEach(t => {
+                    taskList.innerHTML += `
+                        <div class="card" style="border-left: 4px solid #0d6efd;">
+                            <b>${t.task_id}</b> (${t.block})<br>
+                            <span style="font-size: 13px; color: #555;">📍 ${t.location}</span><br>
+                            <span style="font-size: 12px; color: #666;">Items: ${t.items}</span>
+                        </div>
+                    `;
+                });
             }
-        } catch (e) {
-            msg.style.color = "#dc3545";
-            msg.innerText = "❌ Network error. Saved offline.";
-            let queue = JSON.parse(localStorage.getItem("swiftdrop_offline_queue") || "[]");
-            queue.push(payload);
-            localStorage.setItem("swiftdrop_offline_queue", JSON.stringify(queue));
-            setTimeout(() => { location.reload(); }, 2000);
-        }
+        });
     }
 
-    async function syncOfflineQueue() {
-        let queue = JSON.parse(localStorage.getItem("swiftdrop_offline_queue") || "[]");
-        if (queue.length === 0) return;
+    function calcTotal() {
+        const food = parseFloat(document.getElementById("expFood").value) || 0;
+        const labour = parseFloat(document.getElementById("expLabour").value) || 0;
+        const hotel = parseFloat(document.getElementById("expHotel").value) || 0;
+        const oil = parseFloat(document.getElementById("expOil").value) || 0;
+        const busAuto = parseFloat(document.getElementById("expBusAuto").value) || 0;
+        const misc = parseFloat(document.getElementById("expMisc").value) || 0;
 
-        const msg = document.getElementById("statusMsg");
-        msg.style.display = "block";
-        msg.innerText = "🔄 Syncing offline deliveries...";
+        const total = food + labour + hotel + oil + busAuto + misc;
+        document.getElementById("expTotalDisplay").innerText = "₹" + total;
+    }
 
-        while (queue.length > 0) {
-            let payload = queue[0];
-            try {
-                const response = await fetch(DATABASE_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain" },
-                    body: JSON.stringify(payload)
-                });
-                const data = await response.json();
-                if (data.status === "success") {
-                    queue.shift();
-                    localStorage.setItem("swiftdrop_offline_queue", JSON.stringify(queue));
-                } else {
-                    break;
-                }
-            } catch (e) {
-                break;
+    function submitExpenses() {
+        const payload = {
+            action: "submitExpense",
+            driver_name: currentDriverName,
+            food: document.getElementById("expFood").value,
+            labour: document.getElementById("expLabour").value,
+            hotel: document.getElementById("expHotel").value,
+            oil: document.getElementById("expOil").value,
+            bus_auto: document.getElementById("expBusAuto").value,
+            miscellaneous: document.getElementById("expMisc").value
+        };
+
+        fetch(DATABASE_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert("✅ Expenses successfully submitted for today!");
+                // Reset fields
+                ["expFood", "expLabour", "expHotel", "expOil", "expBusAuto", "expMisc"].forEach(id => document.getElementById(id).value = 0);
+                calcTotal();
+            } else {
+                alert("❌ " + data.detail);
             }
-        }
-        if (queue.length === 0) {
-            msg.innerText = "✅ All offline deliveries synced!";
-            setTimeout(() => { msg.style.display = "none"; }, 3000);
-        }
+        })
+        .catch(err => alert("Network error submitting expenses."));
     }
 </script>
 </body>
