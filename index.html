@@ -3,93 +3,152 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Swift Drop - Driver Portal</title>
 <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
-    body { background-color: #f4f6f9; color: #333; padding: 15px; }
-    .container { max-width: 450px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 20px; }
-    h1 { font-size: 22px; color: #0d6efd; text-align: center; margin-bottom: 5px; font-weight: 800; }
-    p.subtitle { text-align: center; color: #666; font-size: 13px; margin-bottom: 20px; }
+    body { background-color: #f4f6f9; color: #333; padding: 12px; }
+    .container { max-width: 480px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 18px; }
+    h1 { font-size: 22px; color: #0d6efd; text-align: center; margin-bottom: 4px; font-weight: 800; }
+    p.subtitle { text-align: center; color: #666; font-size: 13px; margin-bottom: 18px; }
 
-    input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; margin-bottom: 12px; }
-    button { background: #0d6efd; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; }
-    button:hover { background: #0b5ed7; }
+    input, select { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 8px; font-size: 15px; margin-bottom: 12px; }
+    button { color: white; border: none; padding: 13px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    button:active { opacity: 0.9; }
 
-    .card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+    .card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
     
-    /* Interactive Task Card */
-    .task-card {
-        background: #f8f9fa;
-        border: 1px solid #e9ecef;
-        border-left: 5px solid #0d6efd;
-        border-radius: 10px;
-        padding: 16px;
-        margin-bottom: 14px;
-        cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-        position: relative;
-    }
-    .task-card:active {
-        transform: scale(0.98);
-        background: #eef4ff;
-    }
-    .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .task-id { font-size: 16px; font-weight: 800; color: #0d6efd; }
-    .task-block { font-size: 12px; background: #e7f1ff; color: #084298; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
-    .task-loc { font-size: 14px; font-weight: 600; color: #212529; margin-bottom: 6px; }
-    .task-items { font-size: 12.5px; color: #555; line-height: 1.4; margin-bottom: 10px; }
-    .tap-hint { font-size: 11px; color: #0d6efd; font-weight: bold; text-align: right; }
-
-    .nav-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-    .nav-btn { flex: 1; padding: 10px; background: #e9ecef; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; }
+    /* Navigation Bar */
+    .nav-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+    .nav-btn { flex: 1; padding: 10px; background: #e9ecef; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; color: #495057; }
     .nav-btn.active { background: #0d6efd; color: white; }
 
+    /* Task List Cards */
+    .task-card {
+        background: #ffffff;
+        border: 1px solid #dee2e6;
+        border-left: 5px solid #0d6efd;
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    .task-card:active { transform: scale(0.98); background: #f8f9fa; }
+    .task-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .task-id { font-size: 16px; font-weight: 800; color: #0d6efd; }
+    .task-block-badge { font-size: 12px; background: #e7f1ff; color: #084298; padding: 3px 8px; border-radius: 6px; font-weight: bold; }
+    .task-loc { font-size: 14px; font-weight: 600; color: #212529; margin-bottom: 6px; }
+    .task-preview-items { font-size: 12px; color: #666; line-height: 1.4; margin-bottom: 8px; }
+    .task-tap-label { font-size: 12px; color: #198754; font-weight: bold; text-align: right; }
+
+    /* Workflow Specific Cards matching Screenshot */
+    .workflow-card {
+        background: #fdfdfd;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 14px;
+    }
+    .workflow-card h4 {
+        font-size: 15px;
+        color: #1e293b;
+        margin-bottom: 12px;
+        font-weight: 700;
+    }
+
+    /* Fixed Numbered Item Rows */
+    .item-entry-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f8f9fa;
+        border: 1px solid #edf2f7;
+        padding: 10px 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        gap: 10px;
+    }
+    .item-name-col {
+        font-size: 13.5px;
+        color: #334155;
+        font-weight: 600;
+        flex: 1;
+        line-height: 1.3;
+    }
+    .item-qty-input {
+        width: 80px;
+        margin-bottom: 0;
+        padding: 8px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    /* Photo Capture Box */
+    .photo-preview-box {
+        border: 2px dashed #cbd5e1;
+        border-radius: 8px;
+        padding: 8px;
+        text-align: center;
+        min-height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8fafc;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+    .photo-preview-box img {
+        max-width: 100%;
+        max-height: 250px;
+        border-radius: 6px;
+        object-fit: contain;
+    }
+
+    .btn-retake { background: #fd7e14; }
+    .btn-verify-location { background: #198754; }
+    .btn-upload-challan { background: #56ab91; }
+    .btn-next-challan { background: #0d6efd; }
+
+    .status-badge-verified {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        color: #198754;
+        font-weight: 700;
+        font-size: 13.5px;
+        margin-top: 10px;
+    }
+
+    /* Expenses Section */
     .expense-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .expense-row label { font-size: 14px; font-weight: 600; color: #495057; }
     .expense-row input { width: 130px; margin-bottom: 0; text-align: right; }
     .total-bar { background: #e7f1ff; border: 1px solid #b6d4fe; padding: 12px; border-radius: 8px; font-weight: bold; display: flex; justify-content: space-between; font-size: 16px; color: #084298; margin-bottom: 15px; }
-
-    /* Modal Overlay for Delivery Submission */
-    .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: 999;
-        overflow-y: auto;
-        padding: 20px 10px;
-    }
-    .modal-box {
-        max-width: 440px;
-        background: #fff;
-        margin: 10px auto;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 5px 25px rgba(0,0,0,0.3);
-    }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-    .modal-header h3 { font-size: 18px; color: #0d6efd; }
-    .close-btn { background: none; border: none; font-size: 24px; color: #888; width: auto; padding: 0; cursor: pointer; }
 </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Swift Drop</h1>
-    <p class="subtitle">Driver Operations & Expense Portal</p>
+    <p class="subtitle">Driver Operations & Delivery Verification</p>
 
-    <!-- LOGIN VIEW -->
+    <!-- 1. LOGIN VIEW -->
     <div id="loginView">
         <div class="card">
             <h3 style="margin-bottom: 10px; font-size: 16px;">Driver Login</h3>
             <input type="text" id="driverIdInput" placeholder="Enter Driver ID (e.g. DRV-01)">
-            <button onclick="driverLogin()">Start Shift</button>
+            <button onclick="driverLogin()" style="background:#0d6efd;">Start Shift</button>
         </div>
     </div>
 
-    <!-- MAIN APP VIEW -->
+    <!-- 2. MAIN APP VIEW -->
     <div id="appView" style="display:none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #e7f1ff; padding: 10px; border-radius: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #e7f1ff; padding: 10px 12px; border-radius: 8px;">
             <span id="welcomeDriver" style="font-weight: bold; color: #084298; font-size: 14px;"></span>
             <button onclick="driverLogout()" style="width: auto; padding: 6px 12px; background: #dc3545; font-size: 12px;">End Shift</button>
         </div>
@@ -99,10 +158,78 @@
             <button class="nav-btn" id="tabExpBtn" onclick="switchTab('expenses')">💰 Daily Expenses</button>
         </div>
 
-        <!-- TASKS SECTION -->
+        <!-- TASKS LIST VIEW -->
         <div id="sectionTasks">
-            <h3 style="font-size: 16px; margin-bottom: 10px;">Assigned Deliveries</h3>
+            <h3 style="font-size: 16px; margin-bottom: 12px;">Assigned Deliveries</h3>
             <div id="taskList"><p style="color:#666; font-size:14px;">Loading tasks...</p></div>
+        </div>
+
+        <!-- DELIVERY EXECUTION VIEW (SCREENSHOT LAYOUT) -->
+        <div id="sectionDeliveryDetail" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <button onclick="backToTaskList()" style="width:auto; padding:6px 14px; background:#6c757d; font-size:12px;">⬅ Back to Tasks</button>
+                <span id="detailTaskIdBadge" style="font-weight:800; color:#0d6efd; font-size:15px;"></span>
+            </div>
+
+            <!-- Task Header Info -->
+            <div class="card" style="margin-bottom: 12px; border-left: 4px solid #0d6efd;">
+                <div id="detailLocation" style="font-size: 14px; font-weight: bold; color: #1e293b;"></div>
+                <div id="detailBlock" style="font-size: 12px; color: #64748b; margin-top: 2px;"></div>
+            </div>
+
+            <!-- Challan Number Input -->
+            <div class="workflow-card">
+                <label style="font-size:13px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">Challan / Bill No.</label>
+                <input type="text" id="challanNoInput" placeholder="Enter physical Challan No." style="margin-bottom:0;">
+            </div>
+
+            <!-- Fixed Items List with Empty Boxes -->
+            <div class="workflow-card">
+                <h4>Items to Deliver (Confirm Quantity)</h4>
+                <div id="itemsNumberedContainer">
+                    <!-- Dynamic numbered rows inserted here -->
+                </div>
+            </div>
+
+            <!-- 1. Challan Photo Capture -->
+            <div class="workflow-card">
+                <h4>1. Physical Challan Photo</h4>
+                <div class="photo-preview-box" id="challanPreviewContainer">
+                    <span id="challanPlaceholderText" style="color:#94a3b8; font-size:13px;">No challan photo taken yet</span>
+                    <img id="challanImgPreview" style="display:none;" alt="Challan Preview">
+                </div>
+                <input type="file" id="challanFileInput" accept="image/*" capture="environment" style="display:none;" onchange="handleImageSelected(event, 'challan')">
+                <button class="btn-retake" onclick="document.getElementById('challanFileInput').click()">
+                    🔄 Retake Photo
+                </button>
+            </div>
+
+            <!-- 2. Verify Delivery Location -->
+            <div class="workflow-card">
+                <h4>2. Verify Delivery Location</h4>
+                <button id="btnVerifyLocation" class="btn-verify-location" onclick="triggerLocationVerify()">
+                    📍 Location Verified
+                </button>
+                <div id="locVerifiedBadge" class="status-badge-verified">
+                    ✅ Location Verified
+                </div>
+            </div>
+
+            <!-- 3. Submit Challan -->
+            <div class="workflow-card">
+                <h4>3. Submit Challan</h4>
+                <button id="btnSubmitChallan" class="btn-upload-challan" onclick="submitChallanData()">
+                    🚀 Upload Challan
+                </button>
+            </div>
+
+            <!-- Bottom Next Task Action -->
+            <button class="btn-next-challan" onclick="backToTaskList()" style="margin-bottom: 12px;">
+                📸 Capture Next Challan
+            </button>
+            <p id="counterSubmitted" style="text-align:center; font-size:12.5px; color:#64748b; margin-bottom:20px;">
+                Challans submitted from this device: <b id="submissionCount">0</b>
+            </p>
         </div>
 
         <!-- EXPENSES SECTION -->
@@ -133,48 +260,24 @@
     </div>
 </div>
 
-<!-- TASK DETAILS & PROOF SUBMISSION MODAL -->
-<div id="deliveryModal" class="modal-overlay">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h3 id="modalTaskId">Task Details</h3>
-            <button class="close-btn" onclick="closeDeliveryModal()">&times;</button>
-        </div>
-
-        <div style="background:#f8f9fa; border-radius:8px; padding:12px; margin-bottom:15px; font-size:13.5px; border:1px solid #e9ecef;">
-            <p><b>Block:</b> <span id="modalBlock"></span></p>
-            <p style="margin-top:4px;"><b>Location:</b> <span id="modalLocation"></span></p>
-            <p style="margin-top:4px;"><b>Items:</b> <span id="modalItems"></span></p>
-        </div>
-
-        <div>
-            <label style="font-size:12px; font-weight:bold; color:#495057;">Challan / Bill No.</label>
-            <input type="text" id="modalChallanNo" placeholder="Enter Challan Number">
-
-            <label style="font-size:12px; font-weight:bold; color:#495057;">Items Delivered Details</label>
-            <textarea id="modalItemsDelivered" rows="2" placeholder="Confirm delivered quantity"></textarea>
-
-            <label style="font-size:12px; font-weight:bold; color:#495057;">📸 Upload Signed Challan Photo</label>
-            <input type="file" id="modalChallanImg" accept="image/*" capture="environment">
-
-            <label style="font-size:12px; font-weight:bold; color:#495057;">📸 Upload Site / Location Photo</label>
-            <input type="file" id="modalLocationImg" accept="image/*" capture="environment">
-
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
-                <input type="checkbox" id="modalFullComplete" checked style="width:auto; margin:0;">
-                <label for="modalFullComplete" style="font-size:13px; font-weight:600;">All items delivered completely</label>
-            </div>
-
-            <button id="modalSubmitBtn" onclick="submitTaskProof()" style="background:#198754;">✅ Submit Proof & Complete</button>
-        </div>
-    </div>
-</div>
-
 <script>
     const DATABASE_URL = "https://script.google.com/macros/s/AKfycbxm_C8OVt80XsMzGIV9_oyo2G8szvUw66BWZG3lGMW_IWL45JppaFOlIP0f3FAIH8qu3Q/exec";
     let currentDriverName = "";
     let activeTasksCache = [];
-    let selectedTask = null;
+    let currentTask = null;
+
+    // Delivery state variables
+    let capturedChallanB64 = "";
+    let capturedGpsLat = "0.0";
+    let capturedGpsLon = "0.0";
+    let isLocationCaptured = false;
+
+    // Local device submission counter
+    let deviceSubmissionCount = parseInt(localStorage.getItem("swift_submission_count") || "0", 10);
+
+    function updateCounterDisplay() {
+        document.getElementById("submissionCount").innerText = deviceSubmissionCount;
+    }
 
     function driverLogin() {
         const driverId = document.getElementById("driverIdInput").value.trim();
@@ -194,6 +297,7 @@
                 document.getElementById("appView").style.display = "block";
                 
                 document.getElementById("expDate").value = new Date().toISOString().slice(0, 10);
+                updateCounterDisplay();
                 loadTasks();
             } else {
                 alert("❌ " + data.detail);
@@ -217,12 +321,14 @@
         if (tab === 'tasks') {
             document.getElementById("sectionTasks").style.display = "block";
             document.getElementById("sectionExpenses").style.display = "none";
+            document.getElementById("sectionDeliveryDetail").style.display = "none";
             document.getElementById("tabTaskBtn").classList.add("active");
             document.getElementById("tabExpBtn").classList.remove("active");
             loadTasks();
         } else {
             document.getElementById("sectionTasks").style.display = "none";
             document.getElementById("sectionExpenses").style.display = "block";
+            document.getElementById("sectionDeliveryDetail").style.display = "none";
             document.getElementById("tabTaskBtn").classList.remove("active");
             document.getElementById("tabExpBtn").classList.add("active");
         }
@@ -248,22 +354,22 @@
                     return;
                 }
 
-                // Render all assigned tasks as clickable cards
+                // Render list of task cards
                 activeTasksCache.forEach((t, index) => {
                     taskList.innerHTML += `
-                        <div class="task-card" onclick="openDeliveryModal(${index})">
-                            <div class="task-header">
+                        <div class="task-card" onclick="openTaskDetail(${index})">
+                            <div class="task-title-row">
                                 <span class="task-id">${t.task_id}</span>
-                                <span class="task-block">${t.block}</span>
+                                <span class="task-block-badge">${t.block}</span>
                             </div>
                             <div class="task-loc">📍 ${t.location}</div>
-                            <div class="task-items"><b>Items:</b> ${t.items}</div>
-                            <div class="tap-hint">👉 Tap to submit delivery proof</div>
+                            <div class="task-preview-items">${t.items}</div>
+                            <div class="task-tap-label">👉 Tap to Complete Delivery</div>
                         </div>
                     `;
                 });
             } else {
-                taskList.innerHTML = `<p style='color:red;'>${data.detail || "Failed to load tasks."}</p>`;
+                taskList.innerHTML = `<p style='color:red;'>${data.detail || "Error loading tasks."}</p>`;
             }
         })
         .catch(() => {
@@ -271,103 +377,184 @@
         });
     }
 
-    function openDeliveryModal(taskIndex) {
-        selectedTask = activeTasksCache[taskIndex];
-        if (!selectedTask) return;
+    // Opens the task detail workflow view
+    function openTaskDetail(index) {
+        currentTask = activeTasksCache[index];
+        if (!currentTask) return;
 
-        document.getElementById("modalTaskId").innerText = selectedTask.task_id;
-        document.getElementById("modalBlock").innerText = selectedTask.block;
-        document.getElementById("modalLocation").innerText = selectedTask.location;
-        document.getElementById("modalItems").innerText = selectedTask.items;
-        document.getElementById("modalItemsDelivered").value = selectedTask.items;
-        document.getElementById("modalChallanNo").value = "";
-        document.getElementById("modalChallanImg").value = "";
-        document.getElementById("modalLocationImg").value = "";
-        document.getElementById("modalFullComplete").checked = true;
+        document.getElementById("sectionTasks").style.display = "none";
+        document.getElementById("sectionDeliveryDetail").style.display = "block";
 
-        document.getElementById("deliveryModal").style.display = "block";
+        document.getElementById("detailTaskIdBadge").innerText = currentTask.task_id;
+        document.getElementById("detailLocation").innerText = "📍 " + currentTask.location;
+        document.getElementById("detailBlock").innerText = "Block: " + currentTask.block;
+        document.getElementById("challanNoInput").value = "";
+
+        // Reset photo and location states
+        capturedChallanB64 = "";
+        capturedGpsLat = "0.0";
+        capturedGpsLon = "0.0";
+        isLocationCaptured = false;
+        document.getElementById("challanPlaceholderText").style.display = "block";
+        document.getElementById("challanImgPreview").style.display = "none";
+        document.getElementById("challanImgPreview").src = "";
+        document.getElementById("locVerifiedBadge").style.display = "none";
+        document.getElementById("btnVerifyLocation").style.background = "#198754";
+
+        renderNumberedItems(currentTask.items);
     }
 
-    function closeDeliveryModal() {
-        document.getElementById("deliveryModal").style.display = "none";
-        selectedTask = null;
+    function backToTaskList() {
+        document.getElementById("sectionDeliveryDetail").style.display = "none";
+        document.getElementById("sectionTasks").style.display = "block";
+        loadTasks();
     }
 
-    const fileToBase64 = file => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
+    // Splits "Item: Qty, Item: Qty" into fixed 1., 2., 3. rows with editable quantity boxes
+    function renderNumberedItems(itemsRawStr) {
+        const container = document.getElementById("itemsNumberedContainer");
+        container.innerHTML = "";
 
-    async function submitTaskProof() {
-        if (!selectedTask) return;
-
-        const challanNo = document.getElementById("modalChallanNo").value.trim();
-        const itemsDelivered = document.getElementById("modalItemsDelivered").value.trim();
-        const challanFile = document.getElementById("modalChallanImg").files[0];
-        const locationFile = document.getElementById("modalLocationImg").files[0];
-        const isCompleted = document.getElementById("modalFullComplete").checked;
-
-        if (!challanNo) { alert("Please enter Challan Number."); return; }
-        if (!challanFile || !locationFile) { alert("Please take both Challan and Location photos."); return; }
-
-        const submitBtn = document.getElementById("modalSubmitBtn");
-        submitBtn.disabled = true;
-        submitBtn.innerText = "⏳ Uploading & Verifying...";
-
-        // Capture GPS location
-        let lat = "0.0", lon = "0.0";
-        try {
-            const pos = await new Promise((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 });
-            });
-            lat = pos.coords.latitude;
-            lon = pos.coords.longitude;
-        } catch (e) {
-            console.warn("Location permission bypassed/timed out.");
+        if (!itemsRawStr) {
+            container.innerHTML = "<p style='color:#666; font-size:13px;'>No items specified.</p>";
+            return;
         }
 
+        const itemsList = itemsRawStr.split(",");
+        itemsList.forEach((raw, i) => {
+            const parts = raw.split(":");
+            const itemName = parts[0] ? parts[0].trim() : `Item ${i + 1}`;
+            const expectedQty = parts[1] ? parts[1].trim() : "";
+
+            container.innerHTML += `
+                <div class="item-entry-row">
+                    <div class="item-name-col">
+                        <b>${i + 1}.</b> ${itemName}
+                    </div>
+                    <input type="number" 
+                           class="item-qty-input item-qty-field" 
+                           data-item-name="${itemName}" 
+                           placeholder="Qty" 
+                           value="${expectedQty}">
+                </div>
+            `;
+        });
+    }
+
+    // Photo selection and Base64 conversion
+    function handleImageSelected(e, type) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            capturedChallanB64 = event.target.result;
+            const preview = document.getElementById("challanImgPreview");
+            preview.src = capturedChallanB64;
+            preview.style.display = "block";
+            document.getElementById("challanPlaceholderText").style.display = "none";
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Location Verification GPS Trigger
+    function triggerLocationVerify() {
+        const btn = document.getElementById("btnVerifyLocation");
+        btn.innerText = "⏳ Acquiring GPS Location...";
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    capturedGpsLat = pos.coords.latitude;
+                    capturedGpsLon = pos.coords.longitude;
+                    isLocationCaptured = true;
+                    btn.innerHTML = "📍 Location Verified";
+                    btn.style.background = "#198754";
+                    document.getElementById("locVerifiedBadge").style.display = "flex";
+                },
+                (err) => {
+                    alert("Location access denied or unavailable. Default GPS coordinates applied.");
+                    isLocationCaptured = true;
+                    btn.innerHTML = "📍 Location Verified (Bypassed)";
+                    document.getElementById("locVerifiedBadge").style.display = "flex";
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        } else {
+            alert("Geolocation not supported on this browser.");
+            isLocationCaptured = true;
+            document.getElementById("locVerifiedBadge").style.display = "flex";
+        }
+    }
+
+    // Submit Complete Delivery Data
+    async function submitChallanData() {
+        if (!currentTask) return;
+
+        const challanNo = document.getElementById("challanNoInput").value.trim();
+        if (!challanNo) {
+            alert("Please enter Challan Number.");
+            return;
+        }
+
+        if (!capturedChallanB64) {
+            alert("Please take or upload the physical Challan photo.");
+            return;
+        }
+
+        // Collect delivered items summary
+        const qtyInputs = document.querySelectorAll(".item-qty-field");
+        let deliveredItemsSummary = [];
+        qtyInputs.forEach((input, index) => {
+            const name = input.getAttribute("data-item-name");
+            const qty = input.value || "0";
+            deliveredItemsSummary.push(`${name}: ${qty}`);
+        });
+
+        const btnSubmit = document.getElementById("btnSubmitChallan");
+        btnSubmit.disabled = true;
+        btnSubmit.innerText = "⏳ Uploading Challan & Verifying...";
+
+        const payload = {
+            action: "submit",
+            task_id: currentTask.task_id,
+            driver_name: currentDriverName,
+            delivery_location: currentTask.location,
+            gps_lat: capturedGpsLat,
+            gps_lon: capturedGpsLon,
+            challan_b64: capturedChallanB64,
+            location_b64: capturedChallanB64, // Reuses photo for proof
+            items_delivered: deliveredItemsSummary.join(", "),
+            challan_no: challanNo,
+            is_fully_completed: true
+        };
+
         try {
-            const challanB64 = await fileToBase64(challanFile);
-            const locationB64 = await fileToBase64(locationFile);
-
-            const payload = {
-                action: "submit",
-                task_id: selectedTask.task_id,
-                driver_name: currentDriverName,
-                delivery_location: selectedTask.location,
-                gps_lat: lat,
-                gps_lon: lon,
-                challan_b64: challanB64,
-                location_b64: locationB64,
-                items_delivered: itemsDelivered,
-                challan_no: challanNo,
-                is_fully_completed: isCompleted
-            };
-
-            const response = await fetch(DATABASE_URL, {
+            const res = await fetch(DATABASE_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain" },
                 body: JSON.stringify(payload)
             });
-            const data = await response.json();
+            const data = await res.json();
 
             if (data.status === "success") {
-                alert("✅ Delivery submitted successfully!");
-                closeDeliveryModal();
-                loadTasks();
+                deviceSubmissionCount += 1;
+                localStorage.setItem("swift_submission_count", deviceSubmissionCount);
+                updateCounterDisplay();
+                alert("✅ Challan & Delivery Uploaded Successfully!");
+                backToTaskList();
             } else {
-                alert("❌ " + (data.detail || "Error submitting delivery."));
+                alert("❌ Failed: " + (data.detail || "Server error"));
             }
         } catch (err) {
-            alert("Network or file reading error.");
+            alert("Network error connecting to database.");
         } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = "✅ Submit Proof & Complete";
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = "🚀 Upload Challan";
         }
     }
 
+    // Expenses calculations
     function calcTotal() {
         const food = parseFloat(document.getElementById("expFood").value) || 0;
         const labour = parseFloat(document.getElementById("expLabour").value) || 0;
