@@ -11,11 +11,35 @@
     h1 { font-size: 22px; color: #0d6efd; text-align: center; margin-bottom: 5px; font-weight: 800; }
     p.subtitle { text-align: center; color: #666; font-size: 13px; margin-bottom: 20px; }
 
-    input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; margin-bottom: 12px; }
+    input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; margin-bottom: 12px; }
     button { background: #0d6efd; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; }
     button:hover { background: #0b5ed7; }
 
     .card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+    
+    /* Interactive Task Card */
+    .task-card {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-left: 5px solid #0d6efd;
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 14px;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        position: relative;
+    }
+    .task-card:active {
+        transform: scale(0.98);
+        background: #eef4ff;
+    }
+    .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .task-id { font-size: 16px; font-weight: 800; color: #0d6efd; }
+    .task-block { font-size: 12px; background: #e7f1ff; color: #084298; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
+    .task-loc { font-size: 14px; font-weight: 600; color: #212529; margin-bottom: 6px; }
+    .task-items { font-size: 12.5px; color: #555; line-height: 1.4; margin-bottom: 10px; }
+    .tap-hint { font-size: 11px; color: #0d6efd; font-weight: bold; text-align: right; }
+
     .nav-bar { display: flex; gap: 10px; margin-bottom: 20px; }
     .nav-btn { flex: 1; padding: 10px; background: #e9ecef; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; }
     .nav-btn.active { background: #0d6efd; color: white; }
@@ -24,6 +48,28 @@
     .expense-row label { font-size: 14px; font-weight: 600; color: #495057; }
     .expense-row input { width: 130px; margin-bottom: 0; text-align: right; }
     .total-bar { background: #e7f1ff; border: 1px solid #b6d4fe; padding: 12px; border-radius: 8px; font-weight: bold; display: flex; justify-content: space-between; font-size: 16px; color: #084298; margin-bottom: 15px; }
+
+    /* Modal Overlay for Delivery Submission */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 999;
+        overflow-y: auto;
+        padding: 20px 10px;
+    }
+    .modal-box {
+        max-width: 440px;
+        background: #fff;
+        margin: 10px auto;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+    .modal-header h3 { font-size: 18px; color: #0d6efd; }
+    .close-btn { background: none; border: none; font-size: 24px; color: #888; width: auto; padding: 0; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -87,9 +133,48 @@
     </div>
 </div>
 
+<!-- TASK DETAILS & PROOF SUBMISSION MODAL -->
+<div id="deliveryModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 id="modalTaskId">Task Details</h3>
+            <button class="close-btn" onclick="closeDeliveryModal()">&times;</button>
+        </div>
+
+        <div style="background:#f8f9fa; border-radius:8px; padding:12px; margin-bottom:15px; font-size:13.5px; border:1px solid #e9ecef;">
+            <p><b>Block:</b> <span id="modalBlock"></span></p>
+            <p style="margin-top:4px;"><b>Location:</b> <span id="modalLocation"></span></p>
+            <p style="margin-top:4px;"><b>Items:</b> <span id="modalItems"></span></p>
+        </div>
+
+        <div>
+            <label style="font-size:12px; font-weight:bold; color:#495057;">Challan / Bill No.</label>
+            <input type="text" id="modalChallanNo" placeholder="Enter Challan Number">
+
+            <label style="font-size:12px; font-weight:bold; color:#495057;">Items Delivered Details</label>
+            <textarea id="modalItemsDelivered" rows="2" placeholder="Confirm delivered quantity"></textarea>
+
+            <label style="font-size:12px; font-weight:bold; color:#495057;">📸 Upload Signed Challan Photo</label>
+            <input type="file" id="modalChallanImg" accept="image/*" capture="environment">
+
+            <label style="font-size:12px; font-weight:bold; color:#495057;">📸 Upload Site / Location Photo</label>
+            <input type="file" id="modalLocationImg" accept="image/*" capture="environment">
+
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
+                <input type="checkbox" id="modalFullComplete" checked style="width:auto; margin:0;">
+                <label for="modalFullComplete" style="font-size:13px; font-weight:600;">All items delivered completely</label>
+            </div>
+
+            <button id="modalSubmitBtn" onclick="submitTaskProof()" style="background:#198754;">✅ Submit Proof & Complete</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const DATABASE_URL = "https://script.google.com/macros/s/AKfycbxm_C8OVt80XsMzGIV9_oyo2G8szvUw66BWZG3lGMW_IWL45JppaFOlIP0f3FAIH8qu3Q/exec";
     let currentDriverName = "";
+    let activeTasksCache = [];
+    let selectedTask = null;
 
     function driverLogin() {
         const driverId = document.getElementById("driverIdInput").value.trim();
@@ -108,14 +193,13 @@
                 document.getElementById("loginView").style.display = "none";
                 document.getElementById("appView").style.display = "block";
                 
-                // Set today's date for expenses
                 document.getElementById("expDate").value = new Date().toISOString().slice(0, 10);
                 loadTasks();
             } else {
                 alert("❌ " + data.detail);
             }
         })
-        .catch(err => alert("Connection error during login."));
+        .catch(() => alert("Connection error during login."));
     }
 
     function driverLogout() {
@@ -146,7 +230,7 @@
 
     function loadTasks() {
         const taskList = document.getElementById("taskList");
-        taskList.innerHTML = "<p style='color:#666;'>Loading tasks...</p>";
+        taskList.innerHTML = "<p style='color:#666; font-size:14px;'>Loading tasks...</p>";
 
         fetch(DATABASE_URL, {
             method: "POST",
@@ -157,21 +241,131 @@
         .then(data => {
             if (data.status === "success") {
                 taskList.innerHTML = "";
-                if (data.tasks.length === 0) {
-                    taskList.innerHTML = "<p style='color:#666;'>No pending tasks found for today.</p>";
+                activeTasksCache = data.tasks || [];
+                
+                if (activeTasksCache.length === 0) {
+                    taskList.innerHTML = "<p style='color:#666; font-size:14px;'>No pending tasks found for today.</p>";
                     return;
                 }
-                data.tasks.forEach(t => {
+
+                // Render all assigned tasks as clickable cards
+                activeTasksCache.forEach((t, index) => {
                     taskList.innerHTML += `
-                        <div class="card" style="border-left: 4px solid #0d6efd;">
-                            <b>${t.task_id}</b> (${t.block})<br>
-                            <span style="font-size: 13px; color: #555;">📍 ${t.location}</span><br>
-                            <span style="font-size: 12px; color: #666;">Items: ${t.items}</span>
+                        <div class="task-card" onclick="openDeliveryModal(${index})">
+                            <div class="task-header">
+                                <span class="task-id">${t.task_id}</span>
+                                <span class="task-block">${t.block}</span>
+                            </div>
+                            <div class="task-loc">📍 ${t.location}</div>
+                            <div class="task-items"><b>Items:</b> ${t.items}</div>
+                            <div class="tap-hint">👉 Tap to submit delivery proof</div>
                         </div>
                     `;
                 });
+            } else {
+                taskList.innerHTML = `<p style='color:red;'>${data.detail || "Failed to load tasks."}</p>`;
             }
+        })
+        .catch(() => {
+            taskList.innerHTML = "<p style='color:red;'>Network error loading tasks.</p>";
         });
+    }
+
+    function openDeliveryModal(taskIndex) {
+        selectedTask = activeTasksCache[taskIndex];
+        if (!selectedTask) return;
+
+        document.getElementById("modalTaskId").innerText = selectedTask.task_id;
+        document.getElementById("modalBlock").innerText = selectedTask.block;
+        document.getElementById("modalLocation").innerText = selectedTask.location;
+        document.getElementById("modalItems").innerText = selectedTask.items;
+        document.getElementById("modalItemsDelivered").value = selectedTask.items;
+        document.getElementById("modalChallanNo").value = "";
+        document.getElementById("modalChallanImg").value = "";
+        document.getElementById("modalLocationImg").value = "";
+        document.getElementById("modalFullComplete").checked = true;
+
+        document.getElementById("deliveryModal").style.display = "block";
+    }
+
+    function closeDeliveryModal() {
+        document.getElementById("deliveryModal").style.display = "none";
+        selectedTask = null;
+    }
+
+    const fileToBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+
+    async function submitTaskProof() {
+        if (!selectedTask) return;
+
+        const challanNo = document.getElementById("modalChallanNo").value.trim();
+        const itemsDelivered = document.getElementById("modalItemsDelivered").value.trim();
+        const challanFile = document.getElementById("modalChallanImg").files[0];
+        const locationFile = document.getElementById("modalLocationImg").files[0];
+        const isCompleted = document.getElementById("modalFullComplete").checked;
+
+        if (!challanNo) { alert("Please enter Challan Number."); return; }
+        if (!challanFile || !locationFile) { alert("Please take both Challan and Location photos."); return; }
+
+        const submitBtn = document.getElementById("modalSubmitBtn");
+        submitBtn.disabled = true;
+        submitBtn.innerText = "⏳ Uploading & Verifying...";
+
+        // Capture GPS location
+        let lat = "0.0", lon = "0.0";
+        try {
+            const pos = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 });
+            });
+            lat = pos.coords.latitude;
+            lon = pos.coords.longitude;
+        } catch (e) {
+            console.warn("Location permission bypassed/timed out.");
+        }
+
+        try {
+            const challanB64 = await fileToBase64(challanFile);
+            const locationB64 = await fileToBase64(locationFile);
+
+            const payload = {
+                action: "submit",
+                task_id: selectedTask.task_id,
+                driver_name: currentDriverName,
+                delivery_location: selectedTask.location,
+                gps_lat: lat,
+                gps_lon: lon,
+                challan_b64: challanB64,
+                location_b64: locationB64,
+                items_delivered: itemsDelivered,
+                challan_no: challanNo,
+                is_fully_completed: isCompleted
+            };
+
+            const response = await fetch(DATABASE_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+
+            if (data.status === "success") {
+                alert("✅ Delivery submitted successfully!");
+                closeDeliveryModal();
+                loadTasks();
+            } else {
+                alert("❌ " + (data.detail || "Error submitting delivery."));
+            }
+        } catch (err) {
+            alert("Network or file reading error.");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "✅ Submit Proof & Complete";
+        }
     }
 
     function calcTotal() {
@@ -207,14 +401,13 @@
         .then(data => {
             if (data.status === "success") {
                 alert("✅ Expenses successfully submitted for today!");
-                // Reset fields
                 ["expFood", "expLabour", "expHotel", "expOil", "expBusAuto", "expMisc"].forEach(id => document.getElementById(id).value = 0);
                 calcTotal();
             } else {
                 alert("❌ " + data.detail);
             }
         })
-        .catch(err => alert("Network error submitting expenses."));
+        .catch(() => alert("Network error submitting expenses."));
     }
 </script>
 </body>
