@@ -15,28 +15,18 @@
     p.subtitle { text-align: center; color: #666; font-size: 13px; margin-bottom: 18px; }
 
     input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; margin-bottom: 12px; }
-    button { background: #0d6efd; color: white; border: none; padding: 13px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; }
-    button:hover { background: #0b5ed7; }
+    button { color: white; border: none; padding: 13px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; }
+    .btn-primary { background: #0d6efd; }
+    .btn-primary:hover { background: #0b5ed7; }
     button:disabled { background: #86b7fe; cursor: not-allowed; }
 
     .card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
     
     .nav-bar { display: flex; gap: 8px; margin-bottom: 16px; }
-    .nav-btn { flex: 1; padding: 10px; background: #e9ecef; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; }
+    .nav-btn { flex: 1; padding: 10px; background: #e9ecef; color: #333; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; }
     .nav-btn.active { background: #0d6efd; color: white; }
 
-    /* Task Card */
-    .task-card {
-        background: #f8f9fa;
-        border: 1px solid #e9ecef;
-        border-left: 5px solid #0d6efd;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 12px;
-        cursor: pointer;
-        transition: transform 0.1s ease;
-    }
-    .task-card:active { transform: scale(0.98); background: #eef4ff; }
+    .task-card { background: #f8f9fa; border: 1px solid #e9ecef; border-left: 5px solid #0d6efd; border-radius: 10px; padding: 15px; margin-bottom: 12px; cursor: pointer; }
     .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
     .task-id { font-size: 15px; font-weight: 800; color: #0d6efd; }
     .task-block { font-size: 11px; background: #e7f1ff; color: #084298; padding: 2px 7px; border-radius: 6px; font-weight: bold; }
@@ -44,44 +34,22 @@
     .task-items { font-size: 12px; color: #555; line-height: 1.4; margin-bottom: 8px; }
     .tap-hint { font-size: 11px; color: #0d6efd; font-weight: bold; text-align: right; }
 
-    /* Form Rows */
-    .item-qty-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #fff;
-        border: 1px solid #e9ecef;
-        border-radius: 8px;
-        padding: 8px 12px;
-        margin-bottom: 8px;
-    }
+    .item-qty-row { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #e9ecef; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
     .item-label { font-size: 13px; font-weight: 600; color: #333; flex: 1; padding-right: 10px; }
-    .item-input { width: 80px; margin-bottom: 0; padding: 8px; text-align: center; font-weight: bold; font-size: 15px; border: 2px solid #ced4da; }
-    .item-input:focus { border-color: #0d6efd; outline: none; }
+    select.item-input { width: 70px; margin-bottom: 0; padding: 6px; text-align: center; font-weight: bold; font-size: 15px; border: 2px solid #ced4da; }
+    select.item-input:focus { border-color: #0d6efd; outline: none; }
 
-    /* Photo Upload Box */
-    .photo-box {
-        border: 2px dashed #0d6efd;
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 15px;
-        text-align: center;
-        margin-bottom: 12px;
-        cursor: pointer;
-    }
-    .photo-preview {
-        width: 100%;
-        max-height: 160px;
-        object-fit: cover;
-        border-radius: 6px;
-        margin-top: 8px;
-        display: none;
-    }
+    .photo-box { border: 2px dashed #0d6efd; background: #f8f9fa; border-radius: 8px; padding: 15px; text-align: center; margin-bottom: 12px; cursor: pointer; }
+    .photo-preview { width: 100%; max-height: 160px; object-fit: cover; border-radius: 6px; margin-top: 8px; display: none; }
 
     .expense-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .expense-row label { font-size: 14px; font-weight: 600; color: #495057; }
     .expense-row input { width: 120px; margin-bottom: 0; text-align: right; }
     .total-bar { background: #e7f1ff; border: 1px solid #b6d4fe; padding: 12px; border-radius: 8px; font-weight: bold; display: flex; justify-content: space-between; font-size: 16px; color: #084298; margin-bottom: 15px; }
+
+    /* GPS Button States */
+    .btn-gps-yellow { background: #ffc107; color: #000; margin-bottom: 12px; }
+    .btn-gps-green { background: #198754; color: #fff; margin-bottom: 12px; }
 </style>
 </head>
 <body>
@@ -90,16 +58,16 @@
     <h1>Swift Drop</h1>
     <p class="subtitle">Driver Operations & Delivery Verification</p>
 
-    <!-- LOGIN SCREEN -->
+    <!-- LOGIN -->
     <div id="loginView">
         <div class="card">
             <h3 style="margin-bottom: 10px; font-size: 16px;">Driver Login</h3>
             <input type="text" id="driverIdInput" placeholder="Enter Driver ID (e.g. DRV-01)">
-            <button onclick="driverLogin()">Start Shift</button>
+            <button class="btn-primary" onclick="driverLogin()">Start Shift</button>
         </div>
     </div>
 
-    <!-- MAIN APP SCREEN -->
+    <!-- MAIN APP -->
     <div id="appView" style="display:none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; background: #e7f1ff; padding: 10px; border-radius: 8px;">
             <span id="welcomeDriver" style="font-weight: bold; color: #084298; font-size: 13.5px;"></span>
@@ -111,13 +79,13 @@
             <button class="nav-btn" id="tabExpBtn" onclick="switchTab('expenses')">💰 Daily Expenses</button>
         </div>
 
-        <!-- 1. TASKS SECTION -->
+        <!-- TASKS LIST -->
         <div id="sectionTasks">
             <h3 style="font-size: 15px; margin-bottom: 10px;">Assigned Deliveries</h3>
             <div id="taskList"><p style="color:#666; font-size:13px;">Loading tasks...</p></div>
         </div>
 
-        <!-- 2. TASK EXECUTION VIEW -->
+        <!-- DELIVERY EXECUTION -->
         <div id="sectionDeliveryExecution" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <button onclick="backToTaskList()" style="width:auto; padding:6px 12px; background:#6c757d; font-size:12px;">← Back to Tasks</button>
@@ -129,17 +97,12 @@
                 <div style="font-size:12px; color:#666;" id="execBlock"></div>
             </div>
 
-            <!-- Challan No -->
             <label style="font-size:12px; font-weight:bold; color:#495057;">Challan / Bill No.</label>
-            <input type="text" id="execChallanNo" placeholder="Enter physical Challan No.">
+            <input type="number" id="execChallanNo" placeholder="Enter physical Challan No.">
 
-            <!-- Item Quantity Verification (Empty inputs for Driver verification) -->
-            <label style="font-size:12px; font-weight:bold; color:#495057; display:block; margin-bottom:6px;">
-                Items to Deliver (Confirm Quantity)
-            </label>
+            <label style="font-size:12px; font-weight:bold; color:#495057; display:block; margin-bottom:6px;">Items to Deliver (Confirm Quantity)</label>
             <div id="execItemsContainer" style="margin-bottom:14px;"></div>
 
-            <!-- Photo 1: Physical Challan Photo -->
             <label style="font-size:12px; font-weight:bold; color:#495057;">1. Physical Challan Photo</label>
             <div class="photo-box" onclick="document.getElementById('fileChallan').click()">
                 <div id="labelChallan">📷 Tap to capture Signed Challan</div>
@@ -147,7 +110,6 @@
                 <input type="file" id="fileChallan" accept="image/*" capture="environment" style="display:none;" onchange="handlePhotoSelect(this, 'previewChallan', 'labelChallan')">
             </div>
 
-            <!-- Photo 2: Delivery Location / Site Photo -->
             <label style="font-size:12px; font-weight:bold; color:#495057;">2. Delivery Location Photo</label>
             <div class="photo-box" onclick="document.getElementById('fileLocation').click()">
                 <div id="labelLocation">📸 Tap to capture Location / Site</div>
@@ -155,34 +117,24 @@
                 <input type="file" id="fileLocation" accept="image/*" capture="environment" style="display:none;" onchange="handlePhotoSelect(this, 'previewLocation', 'labelLocation')">
             </div>
 
-            <!-- Geo & Final Submission -->
-            <div id="gpsStatusText" style="font-size:12px; text-align:center; color:#666; margin-bottom:10px;">📍 GPS will be captured automatically</div>
-            <button id="btnSubmitDelivery" onclick="submitCompletedTask()" style="background:#198754; font-size:16px;">🚀 Submit Challan & Proof</button>
+            <button type="button" id="btnCaptureGPS" class="btn-gps-yellow" onclick="captureManualGPS()">📍 Tap to Capture Location</button>
+
+            <button id="btnSubmitDelivery" class="btn-primary" onclick="submitCompletedTask()">🚀 Submit Challan & Proof</button>
         </div>
 
-        <!-- 3. EXPENSES SECTION -->
+        <!-- EXPENSES -->
         <div id="sectionExpenses" style="display:none;">
             <div class="card">
                 <h3 style="font-size: 15px; margin-bottom: 12px;">Daily Expense Log</h3>
-                
-                <div style="margin-bottom: 12px;">
-                    <label style="font-size: 12px; font-weight: bold; color: #666; display: block; margin-bottom: 4px;">DATE (Locked to Today)</label>
-                    <input type="date" id="expDate" readonly style="background: #e9ecef; cursor: not-allowed; margin-bottom: 0;">
-                </div>
-
+                <input type="date" id="expDate" readonly style="background: #e9ecef; cursor: not-allowed;">
                 <div class="expense-row"><label>Food (₹)</label><input type="number" id="expFood" value="0" oninput="calcTotal()"></div>
                 <div class="expense-row"><label>Labour (₹)</label><input type="number" id="expLabour" value="0" oninput="calcTotal()"></div>
                 <div class="expense-row"><label>Hotel (₹)</label><input type="number" id="expHotel" value="0" oninput="calcTotal()"></div>
                 <div class="expense-row"><label>Oil (₹)</label><input type="number" id="expOil" value="0" oninput="calcTotal()"></div>
                 <div class="expense-row"><label>Bus/Auto (₹)</label><input type="number" id="expBusAuto" value="0" oninput="calcTotal()"></div>
-                <div class="expense-row"><label>Miscellaneous (₹)</label><input type="number" id="expMisc" value="0" oninput="calcTotal()"></div>
-
-                <div class="total-bar">
-                    <span>TOTAL</span>
-                    <span id="expTotalDisplay">₹0</span>
-                </div>
-
-                <button onclick="submitExpenses()" style="background: #198754;">Submit Today's Expenses</button>
+                <div class="expense-row"><label>Misc (₹)</label><input type="number" id="expMisc" value="0" oninput="calcTotal()"></div>
+                <div class="total-bar"><span>TOTAL</span><span id="expTotalDisplay">₹0</span></div>
+                <button class="btn-primary" style="background:#198754;" onclick="submitExpenses()">Submit Expenses</button>
             </div>
         </div>
     </div>
@@ -194,16 +146,15 @@
     let activeTasksCache = [];
     let currentExecutingTask = null;
     let expectedParsedItems = [];
+    
+    // Manual Location State
+    let manualLat = null;
+    let manualLon = null;
 
     function driverLogin() {
         const driverId = document.getElementById("driverIdInput").value.trim();
         if (!driverId) { alert("Please enter Driver ID"); return; }
-
-        fetch(DATABASE_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify({ action: "login", driver_id: driverId })
-        })
+        fetch(DATABASE_URL, { method: "POST", body: JSON.stringify({ action: "login", driver_id: driverId }) })
         .then(res => res.json())
         .then(data => {
             if (data.status === "success") {
@@ -213,98 +164,72 @@
                 document.getElementById("appView").style.display = "block";
                 document.getElementById("expDate").value = new Date().toISOString().slice(0, 10);
                 loadTasks();
-            } else {
-                alert("❌ " + data.detail);
-            }
-        })
-        .catch(() => alert("Connection error during login."));
+            } else alert("❌ " + data.detail);
+        }).catch(() => alert("Connection error."));
     }
 
     function driverLogout() {
         if (!confirm("End shift?")) return;
-        fetch(DATABASE_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify({ action: "logout", driver_name: currentDriverName })
-        }).then(() => location.reload());
+        fetch(DATABASE_URL, { method: "POST", body: JSON.stringify({ action: "logout", driver_name: currentDriverName }) })
+        .then(() => location.reload());
     }
 
     function switchTab(tab) {
-        if (tab === 'tasks') {
-            document.getElementById("sectionTasks").style.display = "block";
-            document.getElementById("sectionDeliveryExecution").style.display = "none";
-            document.getElementById("sectionExpenses").style.display = "none";
-            document.getElementById("tabTaskBtn").classList.add("active");
-            document.getElementById("tabExpBtn").classList.remove("active");
-            loadTasks();
-        } else {
-            document.getElementById("sectionTasks").style.display = "none";
-            document.getElementById("sectionDeliveryExecution").style.display = "none";
-            document.getElementById("sectionExpenses").style.display = "block";
-            document.getElementById("tabTaskBtn").classList.remove("active");
-            document.getElementById("tabExpBtn").classList.add("active");
-        }
+        document.getElementById("sectionTasks").style.display = (tab === 'tasks') ? "block" : "none";
+        document.getElementById("sectionDeliveryExecution").style.display = "none";
+        document.getElementById("sectionExpenses").style.display = (tab === 'expenses') ? "block" : "none";
+        document.getElementById("tabTaskBtn").className = (tab === 'tasks') ? "nav-btn active" : "nav-btn";
+        document.getElementById("tabExpBtn").className = (tab === 'expenses') ? "nav-btn active" : "nav-btn";
+        if(tab === 'tasks') loadTasks();
     }
 
     function loadTasks() {
         const taskList = document.getElementById("taskList");
         taskList.innerHTML = "<p style='color:#666; font-size:13px;'>Loading tasks...</p>";
-
-        fetch(DATABASE_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify({ action: "getTasks", driver_name: currentDriverName })
-        })
+        fetch(DATABASE_URL, { method: "POST", body: JSON.stringify({ action: "getTasks", driver_name: currentDriverName }) })
         .then(res => res.json())
         .then(data => {
             if (data.status === "success") {
                 taskList.innerHTML = "";
                 activeTasksCache = data.tasks || [];
-                
                 if (activeTasksCache.length === 0) {
-                    taskList.innerHTML = "<p style='color:#666; font-size:13px;'>No pending tasks found for today.</p>";
+                    taskList.innerHTML = "<p style='color:#666;'>No pending tasks found.</p>";
                     return;
                 }
-
                 activeTasksCache.forEach((t, idx) => {
                     taskList.innerHTML += `
                         <div class="task-card" onclick="openDeliveryExecution(${idx})">
-                            <div class="task-header">
-                                <span class="task-id">${t.task_id}</span>
-                                <span class="task-block">${t.block}</span>
-                            </div>
+                            <div class="task-header"><span class="task-id">${t.task_id}</span><span class="task-block">${t.block}</span></div>
                             <div class="task-loc">📍 ${t.location}</div>
                             <div class="task-items"><b>Items:</b> ${t.items}</div>
-                            <div class="tap-hint">👉 Tap to start delivery & verify</div>
-                        </div>
-                    `;
+                            <div class="tap-hint">👉 Tap to verify & submit</div>
+                        </div>`;
                 });
-            } else {
-                taskList.innerHTML = `<p style='color:red;'>${data.detail || "Error loading tasks."}</p>`;
-            }
-        })
-        .catch(() => {
-            taskList.innerHTML = "<p style='color:red;'>Network error loading tasks.</p>";
-        });
+            } else taskList.innerHTML = `<p style='color:red;'>${data.detail}</p>`;
+        }).catch(() => taskList.innerHTML = "<p style='color:red;'>Network error.</p>");
     }
 
     function openDeliveryExecution(idx) {
         currentExecutingTask = activeTasksCache[idx];
         if (!currentExecutingTask) return;
-
+        
         document.getElementById("sectionTasks").style.display = "none";
         document.getElementById("sectionDeliveryExecution").style.display = "block";
-
         document.getElementById("execTaskId").innerText = currentExecutingTask.task_id;
         document.getElementById("execLocation").innerText = "📍 " + currentExecutingTask.location;
         document.getElementById("execBlock").innerText = "Block: " + currentExecutingTask.block;
         document.getElementById("execChallanNo").value = "";
 
-        // Reset Photos
+        // Reset Location Button
+        manualLat = null;
+        manualLon = null;
+        const gpsBtn = document.getElementById("btnCaptureGPS");
+        gpsBtn.className = "btn-gps-yellow";
+        gpsBtn.innerText = "📍 Tap to Capture Location";
+
         resetPhotoInput('fileChallan', 'previewChallan', 'labelChallan', '📷 Tap to capture Signed Challan');
         resetPhotoInput('fileLocation', 'previewLocation', 'labelLocation', '📸 Tap to capture Location / Site');
 
-        // Parse items string (e.g., "Water Purifier (RO): 1, Battery: 6") into empty input fields
         const container = document.getElementById("execItemsContainer");
         container.innerHTML = "";
         expectedParsedItems = [];
@@ -316,14 +241,21 @@
             const sub = trimmed.split(":");
             const itemName = sub[0] ? sub[0].trim() : trimmed;
             const expectedQty = sub[1] ? parseInt(sub[1].trim(), 10) || 0 : 0;
-
             expectedParsedItems.push({ name: itemName, expectedQty: expectedQty });
 
-            // Create blank input field for driver entry
+            // Generate dropdown options dynamically up to double the expected quantity
+            let maxDropdownQty = Math.max(100, expectedQty + 50);
+            let optionsHtml = `<option value="" disabled selected>Qty</option>`;
+            for(let q = 0; q <= maxDropdownQty; q++) {
+                optionsHtml += `<option value="${q}">${q}</option>`;
+            }
+
             container.innerHTML += `
                 <div class="item-qty-row">
                     <div class="item-label">${i + 1}. ${itemName}</div>
-                    <input type="number" class="item-input" id="itemQtyInput_${i}" min="0" placeholder="Qty">
+                    <select class="item-input" id="itemQtyInput_${i}">
+                        ${optionsHtml}
+                    </select>
                 </div>
             `;
         });
@@ -332,13 +264,36 @@
     function backToTaskList() {
         document.getElementById("sectionDeliveryExecution").style.display = "none";
         document.getElementById("sectionTasks").style.display = "block";
-        currentExecutingTask = null;
+    }
+
+    function captureManualGPS() {
+        const btn = document.getElementById("btnCaptureGPS");
+        btn.innerText = "⏳ Acquiring GPS...";
+        
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                manualLat = pos.coords.latitude;
+                manualLon = pos.coords.longitude;
+                btn.className = "btn-gps-green";
+                btn.innerText = "✅ Location Captured";
+            },
+            (err) => {
+                alert("Please enable GPS/Location permissions on your device.");
+                btn.innerText = "📍 Tap to Retry Location Capture";
+                btn.className = "btn-gps-yellow";
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
     }
 
     function handlePhotoSelect(input, previewId, labelId) {
         const file = input.files[0];
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = function(e) {
             const preview = document.getElementById(previewId);
@@ -357,12 +312,28 @@
         document.getElementById(labelId).innerText = defaultText;
     }
 
-    const fileToBase64 = file => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = err => reject(err);
-    });
+    // IMAGE COMPRESSOR - Fixes the "Network or file upload error" limit
+    function compressImage(file, maxWidth = 900) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = event => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ratio = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * ratio;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.6)); // 60% quality compression
+                };
+                img.onerror = () => reject(new Error("Failed to load image for compression"));
+            };
+            reader.onerror = () => reject(new Error("Failed to read file"));
+        });
+    }
 
     async function submitCompletedTask() {
         if (!currentExecutingTask) return;
@@ -373,81 +344,63 @@
 
         if (!challanNo) { alert("Please enter the physical Challan No."); return; }
 
-        // Validate items and verify entered qty vs assigned qty
         let deliveredItemsList = [];
         let isFullyCompleted = true;
-        let atLeastOneEntered = false;
 
         for (let i = 0; i < expectedParsedItems.length; i++) {
             const inputVal = document.getElementById(`itemQtyInput_${i}`).value;
             if (inputVal === "") {
-                alert(`Please enter the delivered quantity for: ${expectedParsedItems[i].name}`);
+                alert(`Please select the delivered quantity for: ${expectedParsedItems[i].name}`);
                 return;
             }
-
             const deliveredQty = parseInt(inputVal, 10) || 0;
-            if (deliveredQty > 0) atLeastOneEntered = true;
-
-            if (deliveredQty < expectedParsedItems[i].expectedQty) {
-                isFullyCompleted = false; // Flagged as Partial if less than assigned
-            }
-
+            if (deliveredQty < expectedParsedItems[i].expectedQty) isFullyCompleted = false;
             deliveredItemsList.push(`${expectedParsedItems[i].name}: ${deliveredQty}`);
         }
 
         if (!challanFile) { alert("Please take the physical Challan Photo."); return; }
         if (!locationFile) { alert("Please take the Delivery Location Photo."); return; }
+        
+        if (manualLat === null || manualLon === null) {
+            alert("⚠️ Please tap the Yellow button to capture your location before submitting.");
+            return;
+        }
 
         const submitBtn = document.getElementById("btnSubmitDelivery");
         submitBtn.disabled = true;
-        submitBtn.innerText = "⏳ Uploading photos & GPS...";
-
-        // Geolocation
-        let lat = "0.0", lon = "0.0";
-        try {
-            const pos = await new Promise((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 7000 });
-            });
-            lat = pos.coords.latitude;
-            lon = pos.coords.longitude;
-        } catch (e) {
-            console.warn("GPS bypassed/timed out.");
-        }
+        submitBtn.innerText = "⏳ Compressing & Uploading...";
 
         try {
-            const challanB64 = await fileToBase64(challanFile);
-            const locationB64 = await fileToBase64(locationFile);
+            const compressedChallan = await compressImage(challanFile);
+            const compressedLocation = await compressImage(locationFile);
 
             const payload = {
                 action: "submit",
                 task_id: currentExecutingTask.task_id,
                 driver_name: currentDriverName,
                 delivery_location: currentExecutingTask.location,
-                gps_lat: lat,
-                gps_lon: lon,
-                challan_b64: challanB64,
-                location_b64: locationB64,
+                gps_lat: manualLat,
+                gps_lon: manualLon,
+                challan_b64: compressedChallan,
+                location_b64: compressedLocation,
                 items_delivered: deliveredItemsList.join(", "),
                 challan_no: challanNo,
                 is_fully_completed: isFullyCompleted
             };
 
-            const response = await fetch(DATABASE_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify(payload)
-            });
+            const response = await fetch(DATABASE_URL, { method: "POST", body: JSON.stringify(payload) });
             const data = await response.json();
 
             if (data.status === "success") {
-                alert(isFullyCompleted ? "✅ Delivery Verified & Marked COMPLETED!" : "⚠️ Submitted as PARTIAL delivery (Quantities pending).");
+                alert(isFullyCompleted ? "✅ Delivery Verified & Marked COMPLETED!" : "⚠️ Submitted as PARTIAL delivery.");
                 backToTaskList();
                 loadTasks();
             } else {
                 alert("❌ " + (data.detail || "Submission error."));
             }
         } catch (err) {
-            alert("Network or file upload error.");
+            alert("Upload failed. Ensure you have internet and try again.");
+            console.error(err);
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerText = "🚀 Submit Challan & Proof";
@@ -455,45 +408,28 @@
     }
 
     function calcTotal() {
-        const food = parseFloat(document.getElementById("expFood").value) || 0;
-        const labour = parseFloat(document.getElementById("expLabour").value) || 0;
-        const hotel = parseFloat(document.getElementById("expHotel").value) || 0;
-        const oil = parseFloat(document.getElementById("expOil").value) || 0;
-        const busAuto = parseFloat(document.getElementById("expBusAuto").value) || 0;
-        const misc = parseFloat(document.getElementById("expMisc").value) || 0;
-
-        const total = food + labour + hotel + oil + busAuto + misc;
+        const ids = ["expFood", "expLabour", "expHotel", "expOil", "expBusAuto", "expMisc"];
+        let total = 0;
+        ids.forEach(id => total += (parseFloat(document.getElementById(id).value) || 0));
         document.getElementById("expTotalDisplay").innerText = "₹" + total;
     }
 
     function submitExpenses() {
         const payload = {
-            action: "submitExpense",
-            driver_name: currentDriverName,
-            food: document.getElementById("expFood").value,
-            labour: document.getElementById("expLabour").value,
-            hotel: document.getElementById("expHotel").value,
-            oil: document.getElementById("expOil").value,
-            bus_auto: document.getElementById("expBusAuto").value,
-            miscellaneous: document.getElementById("expMisc").value
+            action: "submitExpense", driver_name: currentDriverName,
+            food: document.getElementById("expFood").value, labour: document.getElementById("expLabour").value,
+            hotel: document.getElementById("expHotel").value, oil: document.getElementById("expOil").value,
+            bus_auto: document.getElementById("expBusAuto").value, miscellaneous: document.getElementById("expMisc").value
         };
-
-        fetch(DATABASE_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify(payload)
-        })
+        fetch(DATABASE_URL, { method: "POST", body: JSON.stringify(payload) })
         .then(res => res.json())
         .then(data => {
             if (data.status === "success") {
-                alert("✅ Expenses successfully submitted for today!");
+                alert("✅ Expenses submitted!");
                 ["expFood", "expLabour", "expHotel", "expOil", "expBusAuto", "expMisc"].forEach(id => document.getElementById(id).value = 0);
                 calcTotal();
-            } else {
-                alert("❌ " + data.detail);
-            }
-        })
-        .catch(() => alert("Network error submitting expenses."));
+            } else alert("❌ " + data.detail);
+        });
     }
 </script>
 </body>
